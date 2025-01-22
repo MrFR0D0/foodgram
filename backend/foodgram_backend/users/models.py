@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -19,11 +18,24 @@ class User(AbstractUser):
         (ADMIN, 'Админ'),
     )
     username = models.CharField(
-        verbose_name='username',
+        verbose_name='Никнейм',
         max_length=constants.MAX_USERNAME_LENGHT,
         unique=True,
         validators=[username_validator],
     )
+
+    first_name = models.CharField(
+        verbose_name='Имя',
+        max_length=150,
+        help_text='Введите свое имя'
+    )
+
+    last_name = models.CharField(
+        verbose_name='Фамилия',
+        help_text='Введите свою фамилию',
+        max_length=150
+    )
+
     role = models.CharField(
         max_length=constants.MAX_ROLE_LENGHT,
         choices=CHOICES,
@@ -60,6 +72,3 @@ class User(AbstractUser):
     @property
     def is_admin(self):
         return self.role == self.ADMIN or self.is_staff
-
-
-User = get_user_model()
