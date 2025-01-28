@@ -7,7 +7,7 @@ from foodgram_backend import constants
 def username_validator(value):
     regex = constants.USERNAME_CHECK
     if re.search(regex, value) is None:
-        invalid_characters = set(re.findall(r"^[\w.@+-]+\z", value))
+        invalid_characters = set(re.findall(r"^[w.@+-]+Z", value))
         raise ValidationError(
             (
                 f"Не допустимые символы {invalid_characters} в username. "

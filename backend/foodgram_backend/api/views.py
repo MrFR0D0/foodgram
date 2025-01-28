@@ -1,6 +1,10 @@
 from api.filters import IngredientFilter
-from api.models import Ingredient, Tag
-from api.serializers import IngredientSerializer, TagSerializer
+from api.models import Ingredient, Tag, Recipe
+from api.serializers import (
+    IngredientSerializer, TagSerializer, RecipeSerializer
+)
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 
@@ -19,3 +23,9 @@ class TagsViewSet(viewsets.ModelViewSet):
     serializer_class = TagSerializer
     pagination_class = None
     http_method_names = ('get',)
+
+
+class RecipesViewSet(viewsets.ModelViewSet):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
+    permission_classes = (IsAuthenticated,)

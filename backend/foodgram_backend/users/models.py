@@ -4,8 +4,12 @@ from users.validators import username_validator
 
 
 class User(AbstractUser):
+    USERNAME_FIELD = 'email'
+
+    REQUIRED_FIELDS = []
 
     email = models.EmailField(
+        unique=True,
         max_length=254,
         verbose_name='Адрес электронной почты',
         help_text='Введите свой адрес электронной почты'
@@ -26,11 +30,11 @@ class User(AbstractUser):
         help_text='Введите свою фамилию',
         max_length=150
     )
-    # Тут обманка, надо доделать
+    # # Тут обманка, надо доделать
     # is_subscribed = models.BooleanField(
-        # verbose_name='Подписан ли текущий пользователь на этого',
-    # Надо как то реализовать проверку, возможно через валидатор
-        # default=True,
+    #     verbose_name='Подписан ли текущий пользователь на этого',
+    # # Надо как то реализовать проверку, возможно через валидатор
+    #     default=True,
     # )
     # avatar = models.CharField(
     #     blank=True,

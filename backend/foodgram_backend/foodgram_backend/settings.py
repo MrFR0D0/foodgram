@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -15,6 +16,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'djoser',
     'django_filters',
     'users.apps.UsersConfig',
     'recipes.apps.RecipesConfig',
@@ -94,4 +98,34 @@ NOT_ALLOWED_USERNAME = 'me'
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 2,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ],
+}
+
+
+
+LOGIN_REDIRECT_URL = 'pages:homepage'
+
+LOGIN_URL = 'login'
+
+DJOSER = {
+    # 'HIDE_USERS': False,
+    'SERIALIZERS': {
+        'user_create': 'users.serializers.CustomUserCreateSerializer',
+        'user': 'users.serializers.CustomUserSerializer',
+        # 'current_user': 'users.serializers.CustomUserSerializer',
+    },
+    # 'PERMISSIONS': {
+    #     'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
+    #     'user_list': ['rest_framework.permissions.AllowAny'],
+    # },
 }
