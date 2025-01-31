@@ -18,31 +18,30 @@ class User(AbstractUser):
         verbose_name='Уникальный юзернейм',
         max_length=150,
         unique=True,
+        # db_index=True,
         validators=[username_validator],
     )
     first_name = models.CharField(
         verbose_name='Имя',
         max_length=150,
-        help_text='Введите свое имя'
+        help_text='Введите свое имя',
     )
     last_name = models.CharField(
         verbose_name='Фамилия',
         help_text='Введите свою фамилию',
-        max_length=150
+        max_length=150,
     )
-    # # Тут обманка, надо доделать
-    # is_subscribed = models.BooleanField(
-    #     verbose_name='Подписан ли текущий пользователь на этого',
-    # # Надо как то реализовать проверку, возможно через валидатор
-    #     default=True,
-    # )
-    # avatar = models.CharField(
-    #     blank=True,
-    #     null=True,
-    #     verbose_name='Имя',
-    #     max_length=150,
-    #     help_text='Введите свое имя'
-    # )
+    # Тут обманка, надо доделать
+    is_subscribed = models.BooleanField(
+        verbose_name='Подписан ли текущий пользователь на этого',
+        default=True,
+    )
+    # Тут обманка, надо доделать
+    avatar = models.ImageField(
+        upload_to='recipes/images/',
+        null=True,
+        blank=False
+    )
 
     class Meta:
         ordering = ('username',)
