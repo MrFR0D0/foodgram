@@ -1,5 +1,5 @@
 from api.filters import IngredientFilter
-from api.models import Ingredient, Tag, Recipe
+from api.models import Ingredient, Tag, Recipe, Favorite
 from api.serializers import (
     IngredientSerializer, TagSerializer, RecipeSerializer
 )
@@ -14,6 +14,7 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientSerializer
     filter_backends = [DjangoFilterBackend,]
     filterset_class = IngredientFilter
+    pagination_class = None
     search_fields = ['name']
     http_method_names = ('get',)
 
@@ -22,10 +23,16 @@ class TagsViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_class = None
-    # http_method_names = ('get',)
+    http_method_names = ('get',)
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
+    permission_classes = (IsAuthenticated,)
+
+
+class FavoriteViewSet(viewsets.ModelViewSet):
+    queryset = Favorite.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = (IsAuthenticated,)

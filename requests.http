@@ -64,3 +64,6 @@ Content-Type: application/json
   # "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTczODA4NDU3NywiaWF0IjoxNzM3OTk4MTc3LCJqdGkiOiIyZjM2MGRjYzg0YTU0ZDBmOTJhZjFkN2Q4ZDAxNzc4YiIsInVzZXJfaWQiOjl9.WoD-d6ywfLLbdqdEI_2uFVAvvOOar_NDeOrRPL04hBw",
   # "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MDg0NTc3LCJpYXQiOjE3Mzc5OTgxNzcsImp0aSI6Ijg5NTg0ZjUxNGVkYjQ4NWNiNTc0NzYyNTU0MTQyZmM3IiwidXNlcl9pZCI6OX0.ThIcDIQ5ynCK48Ay2dwFsHMImeyWtSJhw0hV7je1Nl0"
 ###
+GET http://127.0.0.1:8000/api/tags/
+
+###

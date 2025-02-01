@@ -1,4 +1,4 @@
-from api.models import Ingredient, Tag, Recipe
+from api.models import Ingredient, Tag, Recipe, Favorite
 from rest_framework import serializers
 import base64
 from django.core.files.base import ContentFile
@@ -34,12 +34,17 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = (
-            'id', 'tags', 'name',
-            'author',
             'ingredients',
-            'is_favorited',
-            'is_in_shopping_cart',
+            'tags',
+            'image',
             'name',
             'text',
-            'cooking_time', 'image',
+            'cooking_time',
         )
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Favorite
+        fields = ('id', 'name', 'slug')
