@@ -1,4 +1,4 @@
-from api.models import Ingredient, Tag, Recipe, Favorite
+from recipes.models import Ingredient, Tag, Recipe, Favorite
 from rest_framework import serializers
 import base64
 from django.core.files.base import ContentFile

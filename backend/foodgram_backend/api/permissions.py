@@ -1,37 +1,27 @@
 from rest_framework import permissions
 
 
-class IsAdminOrStaff(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.is_admin
+class AnonimOrAuthenticatedReadOnly(permissions.BasePermission):
+    """Разрешает анонимному или авторизованному пользователю
+    только безопасные запросы."""
 
-
-class IsAdminUserOrReadOnly(permissions.BasePermission):
-    def has_permission(self, request, view):
+    def has_object_permission(self, request, view, object):
         return (
-            request.method in permissions.SAFE_METHODS
-            or (request.user.is_authenticated and request.user.is_admin)
+            (request.method in permissions.SAFE_METHODS
+             and (request.user.is_anonymous
+                  or request.user.is_authenticated))
+            or request.user.is_superuser
+            or request.user.is_staff
         )
 
 
-class IsAdminModeratorAuthorOrReadOnly(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
+class AuthorOrReadOnly(permissions.BasePermission):
+    """Предоставляет права на осуществление опасных методов запроса
+    только автору объекта, в остальных случаях
+    доступ запрещен."""
+
+    def has_object_permission(self, request, view, object):
         return (
             request.method in permissions.SAFE_METHODS
-            or obj.author == request.user
-            or request.user.is_moderator
-            or request.user.is_admin
+            or object.author == request.user
         )
-
-
-class IsCurrentUserOrAdminOrReadOnly(permissions.BasePermission):
-    """
-    Неавторизованным пользователям разрешён только просмотр.
-    Если пользователь является администратором
-    или пользователем, то возможны остальные методы.
-    """
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return (obj.id == request.user
-                or request.user.is_superuser)

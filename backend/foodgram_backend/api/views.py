@@ -1,5 +1,5 @@
 from api.filters import IngredientFilter
-from api.models import Ingredient, Tag, Recipe, Favorite
+from recipes.models import Ingredient, Tag, Recipe, Favorite
 from api.serializers import (
     IngredientSerializer, TagSerializer, RecipeSerializer
 )

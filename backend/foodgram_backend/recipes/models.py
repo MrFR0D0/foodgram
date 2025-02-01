@@ -53,12 +53,10 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         through='RecipeIngredient',
-        verbose_name='Список ингредиентов',
         verbose_name='Ингредиенты',
     )
     tags = models.ManyToManyField(
         Tag,
-        through='RecipeTag',
         verbose_name='Список id тегов',
     )
     image = models.ImageField(
@@ -148,7 +146,7 @@ class Favorite(models.Model):
     )
     recipe = models.ForeignKey(
         Recipe,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         verbose_name='Рецепты',
     )
 

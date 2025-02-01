@@ -1,4 +1,7 @@
-from users.serializers import CustomUserSerializer, UserAvatarSerializer
+from users.serializers import (
+    CustomUserSerializer, UserAvatarSerializer,
+    FollowSerializer, FollowShowSerializer
+)
 from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework import status, viewsets
@@ -6,19 +9,79 @@ from rest_framework.decorators import action, api_view
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from djoser.views import UserViewSet
-from api.permissions import IsCurrentUserOrAdminOrReadOnly
-from api.models import Tag
+from api.permissions import AnonimOrAuthenticatedReadOnly
+from recipes.models import Tag
 from api.serializers import TagSerializer
+from django.shortcuts import get_object_or_404
+from users.models import Follow
+from rest_framework.pagination import PageNumberPagination
 
 User = get_user_model()
 
 
 class CustomUserViewSet(UserViewSet):
-    """Вьюсет для создания обьектов класса User."""
-
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AnonimOrAuthenticatedReadOnly,)
+
+    @action(
+        detail=False, methods=['get', 'patch'], url_path='me',
+        url_name='me', permission_classes=(IsAuthenticated,)
+    )
+    def get_me(self, request):
+        """Позволяет пользователю получить подробную информацию о себе
+        и редактировать её."""
+        if request.method == 'PATCH':
+            serializer = CustomUserSerializer(
+                request.user, data=request.data,
+                partial=True, context={'request': request}
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = CustomUserSerializer(
+            request.user, context={'request': request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(
+        detail=True, methods=['post', 'delete'], url_path='subscribe',
+        url_name='subscribe', permission_classes=(IsAuthenticated,)
+    )
+    def get_subscribe(self, request, id):
+        """Позволяет текущему пользователю подписываться/отписываться от
+        от автора контента, чей профиль он просматривает."""
+        author = get_object_or_404(User, id=id)
+        if request.method == 'POST':
+            serializer = FollowSerializer(
+                data={'user': request.user.id, 'author': author.id}
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            author_serializer = FollowShowSerializer(
+                author, context={'request': request}
+            )
+            return Response(
+                author_serializer.data, status=status.HTTP_201_CREATED
+            )
+        user = get_object_or_404(
+            Follow, user=request.user, author=author
+        )
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_subscriptions(self, request):
+        """Возвращает авторов контента, на которых подписан
+        текущий пользователь.."""
+        authors = User.objects.filter(author__user=request.user)
+        paginator = PageNumberPagination()
+        result_pages = paginator.paginate_queryset(
+            queryset=authors, request=request
+        )
+        serializer = FollowShowSerializer(
+            result_pages, context={'request': request}, many=True
+        )
+        return paginator.get_paginated_response(serializer.data)
 
     def get_serializer_class(self):
         if self.action == 'update_avatar':
