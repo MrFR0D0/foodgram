@@ -2,6 +2,7 @@ from rest_framework import serializers
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from django.contrib.auth import get_user_model
 import base64
+from users.validators import username_validator
 from django.core.validators import RegexValidator
 from users.models import Follow
 from django.core.files.base import ContentFile
@@ -23,10 +24,10 @@ class CustomUserCreateSerializer(UserCreateSerializer):
     """Сериализатор для создания объекта класса User."""
     username = serializers.CharField(
         max_length=150,
-        validators=[RegexValidator(
-            regex=r"^[w.@+-]+Z",
-            message='Недопустимые символы в username.'
-        )]
+        # validators=[RegexValidator(
+        #     regex=r'^[w.@+-]+Z',
+        #     message='Недопустимые символы в username.'
+        # )]
     )
 
     class Meta:
@@ -40,6 +41,9 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             'password',
         )
         extra_kwargs = {"password": {"write_only": True}}
+
+    def validate_username(self, value):
+        return username_validator(value)
 
 
 class CustomUserSerializer(UserSerializer):
@@ -65,7 +69,7 @@ class CustomUserSerializer(UserSerializer):
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
-        return object.author.filter(user=request.user).exists()
+        return object.follower.filter(user=request.user).exists()
 
 
 class UserAvatarSerializer(UserSerializer):
