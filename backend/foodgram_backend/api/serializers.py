@@ -96,7 +96,7 @@ class RecipeGETSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
-        return request.user.favoriting.filter(recipe=object).exists()
+        return request.user.favorite.filter(recipe=object).exists()
 
     def get_is_in_shopping_cart(self, object):
         """Проверяет, добавил ли текущий пользователь

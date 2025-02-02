@@ -1,3 +1,4 @@
+# Создаем набор тегов.
 ###
 POST http://127.0.0.1:8000/api/tags/
 Content-Type: application/json
@@ -33,12 +34,15 @@ Content-Type: application/json
   "slug": "dinner"
 }
 ###
+
+
+# Создаем набор продуктов.
 POST http://127.0.0.1:8000/api/ingredients/
 Content-Type: application/json
 
 {
   "name": "огурец",
-  "measurement_unit": "4"
+  "measurement_unit": "кг"
 }
 ###
 POST http://127.0.0.1:8000/api/ingredients/
@@ -46,7 +50,7 @@ Content-Type: application/json
 
 {
   "name": "банан",
-  "measurement_unit": "4"
+  "measurement_unit": "кг"
 }
 ###
 POST http://127.0.0.1:8000/api/ingredients/
@@ -54,7 +58,7 @@ Content-Type: application/json
 
 {
   "name": "яблоко",
-  "measurement_unit": "4"
+  "measurement_unit": "кг"
 }
 ###
 POST http://127.0.0.1:8000/api/ingredients/
@@ -62,6 +66,125 @@ Content-Type: application/json
 
 {
   "name": "морковь",
-  "measurement_unit": "4"
+  "measurement_unit": "кг"
 }
 ###
+
+
+# Создаем пользователя.
+POST http://127.0.0.1:8000/api/users/
+Content-Type: application/json
+
+{
+    "email": "Dima@dima.ru",
+    "username": "Dima",
+    "first_name": "Вася",
+    "last_name": "Иванов",
+    "password": "Password1234!1"
+}
+###
+
+
+# Получаем токен для пользователя.
+POST http://127.0.0.1:8000/api/auth/token/login/
+Content-Type: application/json
+
+{
+    "email": "Dima@dima.ru",
+    "password": "Password1234!1"
+}
+###
+
+
+# Записываем полученный для пользователя токен
+# "ee683dedc9af5bfab22a2d2960912a5b55c09ffb"
+
+
+# Создаем рецепты
+POST http://127.0.0.1:8000/api/recipes/
+Content-Type: application/json
+Authorization:Token ee683dedc9af5bfab22a2d2960912a5b55c09ffb
+
+{
+  "ingredients": [
+    {
+      "id": "1",
+      "amount": "2"
+    },
+    {
+      "id": "2",
+      "amount": "2"
+    }
+  ],
+  "tags": [
+    "1",
+    "2"
+  ],
+  "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAABieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==",
+  "name": "Нечто съедобное (это не точно)",
+  "text": "Приготовьте как нибудь эти ингредиеты",
+  "cooking_time": 5
+}
+###
+POST http://127.0.0.1:8000/api/recipes/
+Content-Type: application/json
+Authorization:Token ee683dedc9af5bfab22a2d2960912a5b55c09ffb
+
+{
+  "ingredients": [
+    {
+      "id": "2",
+      "amount": "2"
+    },
+    {
+      "id": "3",
+      "amount": "2"
+    }
+  ],
+  "tags": [
+    "1",
+    "2"
+  ],
+  "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAABieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==",
+  "name": "Нечто съедобное (это не точно)",
+  "text": "Приготовьте как нибудь эти ингредиеты",
+  "cooking_time": 5
+}
+###
+POST http://127.0.0.1:8000/api/recipes/
+Content-Type: application/json
+Authorization:Token ee683dedc9af5bfab22a2d2960912a5b55c09ffb
+
+{
+  "ingredients": [
+    {
+      "id": "3",
+      "amount": "2"
+    },
+    {
+      "id": "4",
+      "amount": "2"
+    }
+  ],
+  "tags": [
+    "1",
+    "2"
+  ],
+  "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAABieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==",
+  "name": "Нечто съедобное (это не точно)",
+  "text": "Приготовьте как нибудь эти ингредиеты",
+  "cooking_time": 5
+}
+###
+
+
+
+
+
+
+
+
+
+
+# Проверяем рецепты
+GET http://127.0.0.1:8000/api/recipes/
