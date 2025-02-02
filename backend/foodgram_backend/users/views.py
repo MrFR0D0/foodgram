@@ -88,7 +88,10 @@ class CustomUserViewSet(UserViewSet):
             return UserAvatarSerializer
         return super().get_serializer_class()
 
-    @action(detail=False, methods=['put', 'delete'], url_path='me/avatar')
+    @action(
+        detail=False, methods=['put', 'delete'],
+        url_path='me/avatar', permission_classes=(IsAuthenticated,)
+    )
     def update_avatar(self, request, *args, **kwargs):
         user = self.request.user
         if request.method == 'PUT':

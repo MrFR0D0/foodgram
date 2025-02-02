@@ -29,7 +29,7 @@ def create_shopping_cart(ingredients_cart):
     buffer = io.BytesIO()
     pdf_file = canvas.Canvas(buffer)
     pdf_file.setFont('Arial', 24)
-    pdf_file.drawString(200, 800, 'Список покупок.')
+    pdf_file.drawString(200, 800, 'Список покупок')
     pdf_file.setFont('Arial', 14)
     from_bottom = 750
     for number, ingredient in enumerate(ingredients_cart, start=1):
