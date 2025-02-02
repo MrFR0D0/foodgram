@@ -17,6 +17,7 @@ from django.db.models import Sum
 from foodgram_backend.utilits import create_shopping_cart
 from rest_framework.pagination import LimitOffsetPagination
 
+
 class TagsViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
@@ -31,7 +32,7 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     filter_backends = [DjangoFilterBackend,]
     filterset_class = IngredientFilter
-    # pagination_class = None
+    pagination_class = None
     search_fields = ['name']
     http_method_names = ('get',)  # Возможно это лишнее.
 

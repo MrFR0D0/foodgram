@@ -110,7 +110,8 @@ class RecipeGETSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Recipe при небезопасных запросах."""
     ingredients = RecipeIngredientSerializer(
-        many=True
+        many=True,
+        allow_empty=False
     )
     image = Base64ImageField(
         use_url=True,
