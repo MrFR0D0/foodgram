@@ -51,11 +51,11 @@ class User(AbstractUser):
         default=USER,
         verbose_name='Пользовательская роль'
     )
-    # avatar = models.ImageField(
-    #     upload_to='users/avatar/',
-    #     null=True,
-    #     blank=False
-    # )
+    avatar = models.ImageField(
+        upload_to='users/avatar/',
+        null=True,
+        blank=False
+    )
 
     class Meta:
         verbose_name = 'Пользователь'

@@ -1,5 +1,5 @@
 import django_filters
-from recipes.models import Ingredient
+from recipes.models import Ingredient, Recipe
 
 
 class IngredientFilter(django_filters.FilterSet):
@@ -14,11 +14,29 @@ class IngredientFilter(django_filters.FilterSet):
 
 
 class RecipeFilter(django_filters.FilterSet):
-    name = django_filters.CharFilter(
-        field_name='name',
-        lookup_expr='istartswith'
+    tags = django_filters.AllValuesMultipleFilter(
+        field_name='tags__slug'
+    )
+    is_favorited = django_filters.BooleanFilter(
+        method='get_is_favorited'
+    )
+    is_in_shopping_cart = django_filters.BooleanFilter(
+        method='get_is_in_shopping_cart'
+    )
+    author = django_filters.AllValuesMultipleFilter(
+        field_name='author__username'
     )
 
     class Meta:
-        model = Ingredient
-        fields = ['name']
+        model = Recipe
+        fields = ('tags', 'author', 'is_favorited', 'is_in_shopping_cart')
+
+    def get_is_favorited(self, queryset, name, value):
+        if value:
+            return queryset.filter(favoriting__user=self.request.user)
+        return queryset
+
+    def get_is_in_shopping_cart(self, queryset, name, value):
+        if value:
+            return queryset.filter(shopping_cart__user=self.request.user)
+        return queryset

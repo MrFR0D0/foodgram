@@ -1,69 +1,67 @@
-GET http://127.0.0.1:8000/api/recipes/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MDg0NTc3LCJpYXQiOjE3Mzc5OTgxNzcsImp0aSI6Ijg5NTg0ZjUxNGVkYjQ4NWNiNTc0NzYyNTU0MTQyZmM3IiwidXNlcl9pZCI6OX0.ThIcDIQ5ynCK48Ay2dwFsHMImeyWtSJhw0hV7je1Nl0
-###
-GET http://127.0.0.1:8000/api/users/
-###
-POST http://127.0.0.1:8000/api/users/
-Content-Type: application/json
-
-{
-  "email": "test4@test.ru",
-  "username": "Test12",
-  "first_name": "Test6",
-  "last_name": "Test6",
-  "password": "Test4QwertyPRO"
-}
-###
-GET http://127.0.0.1:8000/api/users/1
-###
-POST http://127.0.0.1:8000/api/auth/token/login/
-Content-Type: application/json
-
-{
-  "username": "Test11",
-  "password": "Test4QwertyPRO"
-}
-###
-POST http://127.0.0.1:8000/api/auth/token/logout/
-Authorization: Token fe9b51518dc414cbec9ec71419f00e1069a58112
-
-###
-  # "username": "Test4",
-  # "password": "12345qwertyASDF"
-  # "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTczODA4NDU3NywiaWF0IjoxNzM3OTk4MTc3LCJqdGkiOiIyZjM2MGRjYzg0YTU0ZDBmOTJhZjFkN2Q4ZDAxNzc4YiIsInVzZXJfaWQiOjl9.WoD-d6ywfLLbdqdEI_2uFVAvvOOar_NDeOrRPL04hBw",
-  # "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MDg0NTc3LCJpYXQiOjE3Mzc5OTgxNzcsImp0aSI6Ijg5NTg0ZjUxNGVkYjQ4NWNiNTc0NzYyNTU0MTQyZmM3IiwidXNlcl9pZCI6OX0.ThIcDIQ5ynCK48Ay2dwFsHMImeyWtSJhw0hV7je1Nl0"
-###
-GET http://127.0.0.1:8000/api/users/me
-Authorization: Token fe9b51518dc414cbec9ec71419f00e1069a58112
-###
-POST http://127.0.0.1:8000/api/users/set_password/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MDg0NTc3LCJpYXQiOjE3Mzc5OTgxNzcsImp0aSI6Ijg5NTg0ZjUxNGVkYjQ4NWNiNTc0NzYyNTU0MTQyZmM3IiwidXNlcl9pZCI6OX0.ThIcDIQ5ynCK48Ay2dwFsHMImeyWtSJhw0hV7je1Nl0
-
-Content-Type: application/json
-
-{
-  "new_password": "12345qwertyASDF",
-  "current_password": "675hjjkjJKHG789hh",
-}
-###
-POST http://127.0.0.1:8000/api/users/logout/
-
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MDg0NTc3LCJpYXQiOjE3Mzc5OTgxNzcsImp0aSI6Ijg5NTg0ZjUxNGVkYjQ4NWNiNTc0NzYyNTU0MTQyZmM3IiwidXNlcl9pZCI6OX0.ThIcDIQ5ynCK48Ay2dwFsHMImeyWtSJhw0hV7je1Nl0
-
 ###
 POST http://127.0.0.1:8000/api/tags/
 Content-Type: application/json
 
 {
-  "name": "gdfgfg",
-  "slug": "Tegfgst4QwertyPRO"
+  "name": "Завтррак",
+  "slug": "breakfast"
 }
 ###
-  # "username": "Test4",
-  # "password": "12345qwertyASDF"
-  # "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTczODA4NDU3NywiaWF0IjoxNzM3OTk4MTc3LCJqdGkiOiIyZjM2MGRjYzg0YTU0ZDBmOTJhZjFkN2Q4ZDAxNzc4YiIsInVzZXJfaWQiOjl9.WoD-d6ywfLLbdqdEI_2uFVAvvOOar_NDeOrRPL04hBw",
-  # "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MDg0NTc3LCJpYXQiOjE3Mzc5OTgxNzcsImp0aSI6Ijg5NTg0ZjUxNGVkYjQ4NWNiNTc0NzYyNTU0MTQyZmM3IiwidXNlcl9pZCI6OX0.ThIcDIQ5ynCK48Ay2dwFsHMImeyWtSJhw0hV7je1Nl0"
-###
-GET http://127.0.0.1:8000/api/tags/
+POST http://127.0.0.1:8000/api/tags/
+Content-Type: application/json
 
+{
+  "name": "Обед",
+  "slug": "lunch"
+}
+###
+
+POST http://127.0.0.1:8000/api/tags/
+Content-Type: application/json
+
+{
+  "name": "Полдник",
+  "slug": "afternoon"
+}
+###
+
+POST http://127.0.0.1:8000/api/tags/
+Content-Type: application/json
+
+{
+  "name": "Ужин",
+  "slug": "dinner"
+}
+###
+POST http://127.0.0.1:8000/api/ingredients/
+Content-Type: application/json
+
+{
+  "name": "огурец",
+  "measurement_unit": "4"
+}
+###
+POST http://127.0.0.1:8000/api/ingredients/
+Content-Type: application/json
+
+{
+  "name": "банан",
+  "measurement_unit": "4"
+}
+###
+POST http://127.0.0.1:8000/api/ingredients/
+Content-Type: application/json
+
+{
+  "name": "яблоко",
+  "measurement_unit": "4"
+}
+###
+POST http://127.0.0.1:8000/api/ingredients/
+Content-Type: application/json
+
+{
+  "name": "морковь",
+  "measurement_unit": "4"
+}
 ###
