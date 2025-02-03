@@ -24,7 +24,7 @@ class RecipeFilter(django_filters.FilterSet):
         method='get_is_in_shopping_cart'
     )
     author = django_filters.AllValuesMultipleFilter(
-        field_name='author__username'
+        field_name='author__id'
     )
 
     class Meta:

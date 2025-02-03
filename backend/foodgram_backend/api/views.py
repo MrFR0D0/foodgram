@@ -45,7 +45,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilter
     pagination_class = LimitOffsetPagination
 
-
     @action(
         detail=True, methods=['post', 'delete'], url_path='favorite',
         url_name='favorite', permission_classes=(IsAuthenticated,)
