@@ -102,7 +102,7 @@ class CustomUserViewSet(UserViewSet):
             serializer = self.get_serializer(
                 user,
                 data=request.data,
-                partial=True
+                partial=False
             )
             serializer.is_valid(raise_exception=True)
             serializer.save()
