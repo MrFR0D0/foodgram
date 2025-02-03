@@ -14,7 +14,7 @@ from recipes.models import Tag
 from api.serializers import TagSerializer
 from django.shortcuts import get_object_or_404
 from users.models import Follow
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import LimitOffsetPagination
 
 User = get_user_model()
 
@@ -70,11 +70,15 @@ class CustomUserViewSet(UserViewSet):
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @action(
+        detail=False, methods=['get'], url_path='subscriptions',
+        url_name='subscriptions', permission_classes=(IsAuthenticated,)
+    )
     def get_subscriptions(self, request):
         """Возвращает авторов контента, на которых подписан
         текущий пользователь.."""
-        authors = User.objects.filter(author__user=request.user)
-        paginator = PageNumberPagination()
+        authors = User.objects.filter(followed__user=request.user)
+        paginator = LimitOffsetPagination()
         result_pages = paginator.paginate_queryset(
             queryset=authors, request=request
         )
