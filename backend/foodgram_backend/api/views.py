@@ -72,8 +72,9 @@ class RecipesViewSet(viewsets.ModelViewSet):
         url_name='shopping_cart', permission_classes=(IsAuthenticated,)
     )
     def get_shopping_cart(self, request, pk):
-        """Позволяет текущему пользователю добавлять рецепты
+        """Позволяет текущему пользователю добавлять/удалять рецепты
         в список покупок."""
+
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
             serializer = ShoppingCartSerializer(
@@ -85,11 +86,23 @@ class RecipesViewSet(viewsets.ModelViewSet):
             return Response(
                 shopping_cart_serializer.data, status=status.HTTP_201_CREATED
             )
-        shopping_cart_recipe = get_object_or_404(
-            ShoppingCart, user=request.user, recipe=recipe
-        )
-        shopping_cart_recipe.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        elif request.method == 'DELETE':
+            shopping_cart_recipe = ShoppingCart.objects.filter(
+                user=request.user, recipe=recipe
+            ).first()
+            if shopping_cart_recipe:
+                shopping_cart_recipe.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
+
 
     @action(
         url_name='download_shopping_cart', url_path='download_shopping_cart',
