@@ -187,14 +187,14 @@ GET http://127.0.0.1:8000/api/recipes/
 
 
 # Добавляет рецепт в список покупок пользователя
-POST http://127.0.0.1:8000/api/recipes/3/shopping_cart/
+POST http://127.0.0.1:8000/api/recipes/1/shopping_cart/
 Content-Type: application/json
-Authorization:Token 6ca37923d8acdbdc9d00c38a8bb66ca6e39236d7
+Authorization:Token b3ff814b41f918af7e985ad6b4be9c987b3a27c5
 ###
 
 
 # Добавляет рецепт в избранное пользователя
 POST http://127.0.0.1:8000/api/recipes/3/favorite/
 Content-Type: application/json
-Authorization:Token 6ca37923d8acdbdc9d00c38a8bb66ca6e39236d7
+Authorization:Token b3ff814b41f918af7e985ad6b4be9c987b3a27c5
 ###
