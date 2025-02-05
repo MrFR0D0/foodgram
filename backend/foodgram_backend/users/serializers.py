@@ -132,7 +132,16 @@ class FollowShowSerializer(CustomUserSerializer):
         )
 
     def get_recipes(self, object):
-        author_recipes = object.recipes.all()[:10]
+        recipes_limit = self.context[
+            'request'
+        ].query_params.get('recipes_limit')
+        author_recipes = object.recipes.all()
+        if recipes_limit:
+            try:
+                recipes_limit = int(recipes_limit)
+                author_recipes = author_recipes[:recipes_limit]
+            except ValueError:
+                pass
         return FollowRecipeShortSerializer(
             author_recipes, many=True
         ).data

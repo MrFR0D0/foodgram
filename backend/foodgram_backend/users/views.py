@@ -50,8 +50,9 @@ class CustomUserViewSet(UserViewSet):
     )
     def get_subscribe(self, request, id):
         """Позволяет текущему пользователю подписываться/отписываться от
-        от автора контента, чей профиль он просматривает."""
+        автора контента, чей профиль он просматривает."""
         author = get_object_or_404(User, id=id)
+
         if request.method == 'POST':
             serializer = FollowSerializer(
                 data={'user': request.user.id, 'author': author.id}
@@ -64,11 +65,26 @@ class CustomUserViewSet(UserViewSet):
             return Response(
                 author_serializer.data, status=status.HTTP_201_CREATED
             )
-        user = get_object_or_404(
-            Follow, user=request.user, author=author
-        )
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+
+        try:
+            user = Follow.objects.get(user=request.user, author=author)
+            user.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Follow.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @action(
         detail=False, methods=['get'], url_path='subscriptions',
@@ -76,7 +92,8 @@ class CustomUserViewSet(UserViewSet):
     )
     def get_subscriptions(self, request):
         """Возвращает авторов контента, на которых подписан
-        текущий пользователь.."""
+        текущий пользователь."""
+
         authors = User.objects.filter(followed__user=request.user)
         paginator = LimitOffsetPagination()
         result_pages = paginator.paginate_queryset(

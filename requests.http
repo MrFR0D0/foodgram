@@ -183,3 +183,18 @@ Authorization:Token 6f049cc36f4b34ac1873f7023dc573fdf3c51776
 
 # Проверяем рецепты
 GET http://127.0.0.1:8000/api/recipes/
+###
+
+
+# Добавляет рецепт в список покупок пользователя
+POST http://127.0.0.1:8000/api/recipes/3/shopping_cart/
+Content-Type: application/json
+Authorization:Token 6ca37923d8acdbdc9d00c38a8bb66ca6e39236d7
+###
+
+
+# Добавляет рецепт в избранное пользователя
+POST http://127.0.0.1:8000/api/recipes/3/favorite/
+Content-Type: application/json
+Authorization:Token 6ca37923d8acdbdc9d00c38a8bb66ca6e39236d7
+###

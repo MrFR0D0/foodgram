@@ -92,15 +92,14 @@ class RecipeGETSerializer(serializers.ModelSerializer):
         return FullIngredientSerializer(ingredients, many=True).data
 
     def get_is_favorited(self, object):
-        """Проверяет, добавил ли текущий пользователь рецепт в избанное."""
+        """Проверяет, добавил ли текущий пользователь рецепт в избранное."""
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
         return request.user.favorite.filter(recipe=object).exists()
 
     def get_is_in_shopping_cart(self, object):
-        """Проверяет, добавил ли текущий пользователь
-        рецепт в список покупок."""
+        """Проверяет, добавил ли текущий пользователь рецепт в корзину."""
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
