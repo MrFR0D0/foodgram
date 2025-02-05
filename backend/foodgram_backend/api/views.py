@@ -61,11 +61,14 @@ class RecipesViewSet(viewsets.ModelViewSet):
             return Response(
                 favorite_serializer.data, status=status.HTTP_201_CREATED
             )
-        favorite_recipe = get_object_or_404(
-            Favorite, user=request.user, recipe=recipe
-        )
-        favorite_recipe.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        favorite_recipe = Favorite.objects.filter(
+            user=request.user, recipe=recipe
+        ).first()
+        if favorite_recipe:
+            favorite_recipe.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=True, methods=['post', 'delete'], url_path='shopping_cart',
