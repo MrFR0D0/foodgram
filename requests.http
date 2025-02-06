@@ -100,13 +100,13 @@ Content-Type: application/json
 
 
 # Записываем полученный для пользователя токен
-# 6f049cc36f4b34ac1873f7023dc573fdf3c51776
+# 5aad6bf71ca0d327f7d9e915acf2998bbc62bf89
 
 
 # Создаем рецепты
 POST http://127.0.0.1:8000/api/recipes/
 Content-Type: application/json
-Authorization:Token 6f049cc36f4b34ac1873f7023dc573fdf3c51776
+Authorization:Token 5aad6bf71ca0d327f7d9e915acf2998bbc62bf89
 
 {
   "ingredients": [

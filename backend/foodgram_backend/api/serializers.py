@@ -239,6 +239,18 @@ class FavoriteSerializer(serializers.ModelSerializer):
         ]
 
 
+# class RecipeShortLinkSerializer(serializers.ModelSerializer):
+#     """Сериализатор для отображения короткой ссылки рецептов."""
+
+#     short_link = serializers.CharField(sourse='get_short_url')
+
+#     class Meta:
+#         model = Recipe
+#         fields = (
+#             'short_link',
+#         )
+
+
 class ShoppingCartSerializer(serializers.ModelSerializer):
     """Сериализатор для модели ShoppingCart."""
 

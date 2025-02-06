@@ -6,6 +6,8 @@ from reportlab.pdfgen import canvas
 from rest_framework import serializers
 from django.core.files.base import ContentFile
 import base64
+import base62
+from django.urls import reverse
 
 
 class Base64ImageField(serializers.ImageField):
@@ -51,3 +53,13 @@ def create_shopping_cart(ingredients_cart):
     buffer.close()
     response.write(pdf)
     return response
+
+
+def generate_short_code(recipe_id):
+    """Генерирует короткий код для рецепта"""
+    return base62.encode(recipe_id)
+
+
+def get_short_url(recipe):
+    """Возвращает короткий URL для рецепта"""
+    return generate_short_code(recipe.id)
