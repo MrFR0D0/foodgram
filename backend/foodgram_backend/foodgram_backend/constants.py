@@ -1,4 +1,4 @@
-USERNAME_CHECK = r'^[\w.@+-]+$'
+USERNAME_CHECK = r'^[\w.@+-]+\Z'
 
 MAX_USERNAME_LENGHT = 150
 

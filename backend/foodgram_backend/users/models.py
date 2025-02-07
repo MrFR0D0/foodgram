@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import RegexValidator
+from foodgram_backend import constants
 
 
 class User(AbstractUser):
@@ -31,8 +32,8 @@ class User(AbstractUser):
         unique=True,
         db_index=True,
         validators=[RegexValidator(
-            regex=r'^[w.@+-]+Z',
-            message='Недопустимые символы в username.'
+            regex=constants.USERNAME_CHECK,
+            message='Имя пользователя содержит недопустимый символ'
         )]
     )
     first_name = models.CharField(
@@ -55,6 +56,10 @@ class User(AbstractUser):
         upload_to='users/avatar/',
         null=True,
         blank=False
+    )
+    is_admin = models.BooleanField(
+        verbose_name='администратор',
+        default=False
     )
 
     class Meta:

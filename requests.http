@@ -79,7 +79,7 @@ POST http://127.0.0.1:8000/api/users/
 Content-Type: application/json
 
 {
-    "email": "Dima@dima.ru",
+    "email": "Dima3@dima.ru",
     "username": "Dima",
     "first_name": "Вася",
     "last_name": "Иванов",
@@ -93,20 +93,20 @@ POST http://127.0.0.1:8000/api/auth/token/login/
 Content-Type: application/json
 
 {
-    "email": "Dima@dima.ru",
+    "email": "Dima3@dima.ru",
     "password": "Password1234!1"
 }
 ###
 
 
 # Записываем полученный для пользователя токен
-# 5aad6bf71ca0d327f7d9e915acf2998bbc62bf89
+# ddbd15117e7cb611f549ee7ae771e8a4cb1efd6a
 
 
 # Создаем рецепты
 POST http://127.0.0.1:8000/api/recipes/
 Content-Type: application/json
-Authorization:Token 5aad6bf71ca0d327f7d9e915acf2998bbc62bf89
+Authorization:Token ddbd15117e7cb611f549ee7ae771e8a4cb1efd6a
 
 {
   "ingredients": [

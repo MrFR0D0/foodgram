@@ -9,6 +9,10 @@ from django.core.files.base import ContentFile
 from rest_framework.validators import UniqueTogetherValidator
 from recipes.models import Recipe
 from foodgram_backend.utilits import Base64ImageField
+from django.core.validators import RegexValidator
+from foodgram_backend import constants
+from rest_framework.response import Response
+from rest_framework import status
 
 User = get_user_model()
 
@@ -32,7 +36,12 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def validate_username(self, value):
-        return username_validator(value)
+        validator = RegexValidator(
+            regex=constants.USERNAME_CHECK,
+            message='Имя пользователя содержит недопустимый символ'
+        )
+        validator(value)
+        return value
 
 
 class CustomUserSerializer(UserSerializer):
