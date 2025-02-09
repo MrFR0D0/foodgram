@@ -2,13 +2,14 @@ version: '3.3'
 services:
 
   db:
-    image: postgres:13.10
-    env_file: ../.env
+    image: postgres:13.0-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
 
   backend:
-    image: dimanikolaev/foodgram_backend:latest
+    image: monolith200/foodgram_backend:latest
     restart: always
     volumes:
       - static:/app/static/
@@ -16,17 +17,15 @@ services:
     depends_on:
       - db
     env_file:
-      - ../.env
+      - ./.env
 
   frontend:
-    container_name: foodgram-front
-    build: ../frontend
+    image: monolith200/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
 
   nginx:
-    container_name: foodgram-proxy
-    image: nginx:1.25.4-alpine
+    image: nginx:1.19.3
     ports:
       - "80:80"
     volumes:
