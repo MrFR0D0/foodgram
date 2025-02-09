@@ -9,7 +9,6 @@ from foodgram_backend.utilits import Base64ImageField
 from recipes.models import Recipe
 from users.models import Follow
 
-
 User = get_user_model()
 
 

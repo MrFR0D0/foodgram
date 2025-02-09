@@ -24,10 +24,7 @@ from api.serializers import (
     TagSerializer,
 )
 from foodgram_backend.constants import URL
-from foodgram_backend.utilits import (
-    create_shopping_cart,
-    get_short_url,
-)
+from foodgram_backend.utilits import create_shopping_cart, get_short_url
 from recipes.models import (
     Favorite,
     Ingredient,
