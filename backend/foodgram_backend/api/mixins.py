@@ -1,8 +1,13 @@
-from api.permissions import IsAdminUserOrReadOnly
 from rest_framework import filters, status
-from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin
+from rest_framework.mixins import (
+    CreateModelMixin,
+    DestroyModelMixin,
+    ListModelMixin,
+)
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+
+from api.permissions import IsAdminUserOrReadOnly
 
 
 class ModelMixinSet(CreateModelMixin, ListModelMixin,

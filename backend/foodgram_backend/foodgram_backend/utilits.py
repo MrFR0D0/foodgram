@@ -1,13 +1,13 @@
+import base64
 import io
+
+import base62
+from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from rest_framework import serializers
-from django.core.files.base import ContentFile
-import base64
-import base62
-from django.urls import reverse
 
 
 class Base64ImageField(serializers.ImageField):

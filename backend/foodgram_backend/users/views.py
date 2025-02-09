@@ -1,20 +1,23 @@
-from users.serializers import (
-    CustomUserSerializer, UserAvatarSerializer,
-    FollowSerializer, FollowShowSerializer
-)
 from django.contrib.auth import get_user_model
-from rest_framework.response import Response
-from rest_framework import status, viewsets
-from rest_framework.decorators import action, api_view
-from rest_framework.permissions import (AllowAny, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
-from djoser.views import UserViewSet
-from api.permissions import AnonimOrAuthenticatedReadOnly
-from recipes.models import Tag
-from api.serializers import TagSerializer
 from django.shortcuts import get_object_or_404
-from users.models import Follow
+from djoser.views import UserViewSet
+from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated,
+)
+from rest_framework.response import Response
+
+from api.permissions import AnonimOrAuthenticatedReadOnly
+from users.models import Follow
+from users.serializers import (
+    CustomUserSerializer,
+    FollowSerializer,
+    FollowShowSerializer,
+    UserAvatarSerializer,
+)
 
 User = get_user_model()
 
@@ -72,19 +75,6 @@ class CustomUserViewSet(UserViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Follow.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     @action(
         detail=False, methods=['get'], url_path='subscriptions',

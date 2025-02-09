@@ -1,18 +1,14 @@
-from rest_framework import serializers
-from djoser.serializers import UserCreateSerializer, UserSerializer
 from django.contrib.auth import get_user_model
-import base64
-from users.validators import username_validator
 from django.core.validators import RegexValidator
-from users.models import Follow
-from django.core.files.base import ContentFile
+from djoser.serializers import UserCreateSerializer, UserSerializer
+from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from recipes.models import Recipe
-from foodgram_backend.utilits import Base64ImageField
-from django.core.validators import RegexValidator
+
 from foodgram_backend import constants
-from rest_framework.response import Response
-from rest_framework import status
+from foodgram_backend.utilits import Base64ImageField
+from recipes.models import Recipe
+from users.models import Follow
+
 
 User = get_user_model()
 

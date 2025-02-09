@@ -1,13 +1,17 @@
-from recipes.models import (
-    Ingredient, Tag, Recipe,
-    Favorite, RecipeIngredient, ShoppingCart)
-from rest_framework import serializers
-import base64
-from django.core.files.base import ContentFile
-from foodgram_backend.utilits import Base64ImageField
-from rest_framework.validators import UniqueTogetherValidator
-from users.serializers import CustomUserSerializer
 from django.db import transaction
+from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
+
+from foodgram_backend.utilits import Base64ImageField
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    ShoppingCart,
+    Tag,
+)
+from users.serializers import CustomUserSerializer
 
 
 class TagSerializer(serializers.ModelSerializer):

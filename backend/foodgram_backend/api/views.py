@@ -1,25 +1,41 @@
-from api.filters import IngredientFilter, RecipeFilter
-from recipes.models import (
-    Ingredient, Tag, Recipe, Favorite, ShoppingCart, RecipeIngredient)
-from api.serializers import (
-    IngredientSerializer, TagSerializer, RecipeSerializer,
-    FavoriteSerializer, RecipeShortSerializer, ShoppingCartSerializer,
-    RecipeGETSerializer)
-from rest_framework.permissions import (AllowAny, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
-from api.permissions import AuthorOrReadOnly
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from django.shortcuts import get_object_or_404, render, redirect
-from rest_framework.response import Response
-from django.db.models import Sum
-from foodgram_backend.utilits import create_shopping_cart
-from rest_framework.pagination import LimitOffsetPagination
-import base62
-from foodgram_backend.utilits import get_short_url, generate_short_code
-from foodgram_backend.constants import URL
 from django.core.exceptions import ValidationError
+from django.db.models import Sum
+from django.shortcuts import get_object_or_404, redirect
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
+from rest_framework.response import Response
+
+from api.filters import IngredientFilter, RecipeFilter
+from api.permissions import AuthorOrReadOnly
+from api.serializers import (
+    FavoriteSerializer,
+    IngredientSerializer,
+    RecipeGETSerializer,
+    RecipeSerializer,
+    RecipeShortSerializer,
+    ShoppingCartSerializer,
+    TagSerializer,
+)
+from foodgram_backend.constants import URL
+from foodgram_backend.utilits import (
+    create_shopping_cart,
+    get_short_url,
+)
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    ShoppingCart,
+    Tag,
+)
 
 
 class TagsViewSet(viewsets.ModelViewSet):
@@ -27,7 +43,7 @@ class TagsViewSet(viewsets.ModelViewSet):
     serializer_class = TagSerializer
     pagination_class = None
     permission_classes = (AllowAny,)
-    http_method_names = ('get',)  # Возможно это лишнее.
+    http_method_names = ('get',)
 
 
 class IngredientsViewSet(viewsets.ModelViewSet):
@@ -38,7 +54,7 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     filterset_class = IngredientFilter
     pagination_class = None
     search_fields = ['name']
-    http_method_names = ('get',)  # Возможно это лишнее.
+    http_method_names = ('get',)
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
@@ -127,52 +143,18 @@ class RecipesViewSet(viewsets.ModelViewSet):
             return RecipeGETSerializer
         return RecipeSerializer
 
-    # @action(
-    #     detail=True, methods=['get',], url_path='get-link',
-    #     url_name='get-link', permission_classes=(AllowAny,),
-    #     serializer_class=RecipeShortLinkSerializer
-    # )
-    # def get_link(self, request, pk=None):
-    #     """Перенаправляет на страницу рецепта по короткой ссылке."""
-
-    #     try:
-    #         recipe_id = base62.decode(pk)
-    #         recipe = get_object_or_404(Recipe, pk=recipe_id)
-    #     except (Recipe.DoesNotExist, ValueError):
-    #         return Response(status=status.HTTP_204_NO_CONTENT)
-    #     return redirect('recipes-detail', pk=recipe.pk)
-
-
-
-
     @action(
         detail=True, methods=['get',], url_path='get-link',
         url_name='get-link', permission_classes=(AllowAny,),
-        # serializer_class=RecipeShortLinkSerializer
     )
     def get_link(self, request, pk=None):
         """Возвращает короткую ссылку на рецепт."""
         recipe = get_object_or_404(Recipe, pk=pk)
         recipe.short_link = get_short_url(recipe)
-        # serializer = RecipeShortLinkSerializer(recipe)
         return Response(
             {"short-link": URL + recipe.short_link},
             status=status.HTTP_200_OK
         )
-
-    # @action(
-    #     detail=True, methods=['get'], url_path='get-link',
-    #     url_name='get-link', permission_classes=(AllowAny,),
-    #     serializer_class=RecipeShortLinkSerializer
-    # )
-    # def get_link(self, request, pk=None):
-    #     """Возвращает короткую ссылку на рецепт."""
-    #     recipe = get_object_or_404(Recipe, pk=pk)
-    #     short_code = generate_short_code(recipe.id)
-    #     short_link = f"https://foodgram.example.org/s/{short_code}"
-    #     serializer = self.get_serializer(data={"short_link": short_link})
-    #     serializer.is_valid(raise_exception=True)
-    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 def short_url(request, pk):
