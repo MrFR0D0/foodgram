@@ -3,3 +3,7 @@ git add backend/foodgram_backend/users/*
 sudo nano /etc/nginx/sites-enabled/default
 
 sudo systemctl reload nginx
+
+
+
+cp -r /app/collected_static/. /collected_static/static/
