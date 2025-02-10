@@ -47,7 +47,7 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (AllowAny,)
-    filter_backends = [DjangoFilterBackend,]
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
     pagination_class = None
     search_fields = ['name']
@@ -141,7 +141,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         return RecipeSerializer
 
     @action(
-        detail=True, methods=['get',], url_path='get-link',
+        detail=True, methods=['get'], url_path='get-link',
         url_name='get-link', permission_classes=(AllowAny,),
     )
     def get_link(self, request, pk=None):
