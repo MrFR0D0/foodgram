@@ -12,7 +12,9 @@ SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
 DEBUG = os.getenv("DEBUG", 'False').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['51.250.101.90', 'dimon-foodgram.hopto.org']
+
+CSRF_TRUSTED_ORIGINS = ['https://dimon-foodgram.hopto.org', 'http://dimon-foodgram.hopto.org', 'https://51.250.101.90', 'http://51.250.101.90']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
