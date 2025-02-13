@@ -42,9 +42,9 @@ sudo sh ./get-docker.sh
 sudo apt-get install docker-compose-plugin
 ```
 
-2. Скачать файл [docker-compose.production.yml](https://github.com/rodomir117/foodgram/blob/main/docker-compose.production.yml) на свой сервер.
+2. Скачать файл [docker-compose.production.yml](https://github.com/MrFR0D/foodgram/blob/main/docker-compose.yml) на свой сервер.
 
-3. На сервере в директории с файлом **docker-compose.production.yml** создать файл  **.env**:
+3. На сервере в директории с файлом **docker-compose.yml** создать файл  **.env**:
 ``` bash    
 POSTGRES_DB=имя базы
 POSTGRES_USER=владелец базы
@@ -57,7 +57,7 @@ ALLOWED_HOSTS=разрешенные хосты(your.domain.com)
 ```        
 4. Запустить Docker compose:
 ``` bash
-sudo docker compose -f docker-compose.production.yml up -d
+sudo docker compose -f docker-compose.yml up -d
 ```
 5. На сервере настроить и запустить Nginx:
 - открыть файлы конфигурации
@@ -72,7 +72,7 @@ sudo docker compose -f docker-compose.production.yml up -d
 
         location / {
             proxy_set_header Host $http_host;        
-            proxy_pass http://127.0.0.1:7070;
+            proxy_pass http://127.0.0.1:8000;
             client_max_body_size 5M;
             
         }
@@ -87,4 +87,4 @@ sudo docker compose -f docker-compose.production.yml up -d
     sudo service nginx reload
     ```
 
-## Автор проекта [**Виталий Васюков**](https://github.com/Rodomir117)
+## Автор проекта [**Дмитрий Н.**](https://github.com/MrFR0D0)
