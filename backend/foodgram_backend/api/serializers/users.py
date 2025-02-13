@@ -5,8 +5,8 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from foodgram_backend import constants
-from recipes.utils import Base64ImageField
 from recipes.models import Recipe
+from recipes.utils import Base64ImageField
 from users.models import Follow
 
 User = get_user_model()

@@ -1,6 +1,5 @@
-from django.core.exceptions import ValidationError
 from django.db.models import Sum
-from django.shortcuts import get_object_or_404, redirect, reverse
+from django.shortcuts import get_object_or_404, redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -24,7 +23,6 @@ from api.serializers.recipes import (
     TagSerializer,
 )
 from foodgram_backend.constants import URL
-from recipes.utils import create_shopping_cart, get_short_url
 from recipes.models import (
     Favorite,
     Ingredient,
@@ -33,6 +31,7 @@ from recipes.models import (
     ShoppingCart,
     Tag,
 )
+from recipes.utils import create_shopping_cart
 
 
 class TagsViewSet(viewsets.ModelViewSet):
@@ -154,7 +153,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         """Возвращает короткую ссылку на рецепт."""
         recipe = get_object_or_404(Recipe, pk=pk)
         return Response(
-            {"short-link": URL + str(recipe.short_link)},
+            {'short-link': URL + str(recipe.short_link)},
             status=status.HTTP_200_OK
         )
 

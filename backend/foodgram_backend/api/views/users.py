@@ -9,19 +9,19 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from api.permissions import AnonimOrAuthenticatedReadOnly
-from users.models import Follow
 from api.serializers.users import (
     CustomUserSerializer,
     FollowSerializer,
     FollowShowSerializer,
     UserAvatarSerializer,
 )
+from users.models import Follow
 
 User = get_user_model()
 
 
 class CustomUserViewSet(UserViewSet):
-    queryset = User.objects.all()    
+    queryset = User.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = (AnonimOrAuthenticatedReadOnly,)
 
@@ -60,7 +60,9 @@ class CustomUserViewSet(UserViewSet):
         Позволяет текущему пользователю подписываться/отписываться от
         автора контента, чей профиль он просматривает.
         """
-        author = get_object_or_404(User.objects.annotate(recipes_count=Count('recipes')), id=id)
+        author = get_object_or_404(User.objects.annotate(
+            recipes_count=Count('recipes')
+        ), id=id)
         if request.method == 'POST':
             serializer = FollowSerializer(
                 data={'user': request.user.id, 'author': author.id}
@@ -94,7 +96,9 @@ class CustomUserViewSet(UserViewSet):
         Возвращает авторов контента, на которых подписан
         текущий пользователь.
         """
-        authors = User.objects.filter(followed__user=request.user).annotate(recipes_count=Count('recipes'))
+        authors = User.objects.filter(
+            followed__user=request.user
+        ).annotate(recipes_count=Count('recipes'))
         paginator = LimitOffsetPagination()
         result_pages = paginator.paginate_queryset(
             queryset=authors, request=request

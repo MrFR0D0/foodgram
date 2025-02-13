@@ -2,7 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from recipes.utils import Base64ImageField
+from api.serializers.users import CustomUserSerializer
 from recipes.models import (
     Favorite,
     Ingredient,
@@ -11,8 +11,7 @@ from recipes.models import (
     ShoppingCart,
     Tag,
 )
-from recipes.utils import get_short_url
-from api.serializers.users import CustomUserSerializer
+from recipes.utils import Base64ImageField
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -164,7 +163,6 @@ class RecipeSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     'Количество ингредиента не может быть больше 100'
                 )
-        
         return ingredients
 
     def validate_tags(self, tags):
@@ -200,8 +198,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def update(self, instance, validated_data):
         if 'ingredients' not in validated_data:
-            raise serializers.ValidationError() 
-        elif 'tags' not in validated_data: 
+            raise serializers.ValidationError()
+        elif 'tags' not in validated_data:
             raise serializers.ValidationError()
         instance.tags.clear()
         instance.ingredients.clear()
