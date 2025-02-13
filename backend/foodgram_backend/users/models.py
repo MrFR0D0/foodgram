@@ -23,7 +23,6 @@ class User(AbstractUser):
     email = models.EmailField(
         unique=True,
         max_length=254,
-        db_index=True,
         verbose_name='Адрес электронной почты',
         help_text='Введите свой адрес электронной почты'
     )
@@ -31,7 +30,6 @@ class User(AbstractUser):
         verbose_name='Уникальный юзернейм',
         max_length=150,
         unique=True,
-        db_index=True,
         validators=[RegexValidator(
             regex=constants.USERNAME_CHECK,
             message='Имя пользователя содержит недопустимый символ'
@@ -55,12 +53,8 @@ class User(AbstractUser):
     )
     avatar = models.ImageField(
         upload_to='users/avatar/',
-        null=True,
-        blank=False
-    )
-    is_admin = models.BooleanField(
-        verbose_name='администратор',
-        default=False
+        blank=False,
+        default=None
     )
 
     class Meta:
@@ -68,12 +62,12 @@ class User(AbstractUser):
         verbose_name_plural = 'Пользователи'
         ordering = ('username',)
 
+    def __str__(self):
+        return f'{self.name}'
+
     @property
     def admin(self):
         return self.role == self.ADMIN
-
-    def __str__(self):
-        return self.username
 
 
 class Follow(models.Model):

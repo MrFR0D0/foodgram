@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, reverse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -14,7 +14,7 @@ from rest_framework.response import Response
 
 from api.filters import IngredientFilter, RecipeFilter
 from api.permissions import AuthorOrReadOnly
-from api.serializers import (
+from api.serializers.recipes import (
     FavoriteSerializer,
     IngredientSerializer,
     RecipeGETSerializer,
@@ -24,7 +24,7 @@ from api.serializers import (
     TagSerializer,
 )
 from foodgram_backend.constants import URL
-from foodgram_backend.utilits import create_shopping_cart, get_short_url
+from recipes.utils import create_shopping_cart, get_short_url
 from recipes.models import (
     Favorite,
     Ingredient,
@@ -84,17 +84,19 @@ class RecipesViewSet(viewsets.ModelViewSet):
         if favorite_recipe:
             favorite_recipe.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=True, methods=['post', 'delete'], url_path='shopping_cart',
         url_name='shopping_cart', permission_classes=(IsAuthenticated,)
     )
     def get_shopping_cart(self, request, pk):
-        """Позволяет текущему пользователю добавлять/удалять рецепты
-        в список покупок."""
+        """
+        Метод списка покупок.
 
+        Позволяет текущему пользователю добавлять/удалять рецепты
+        в список покупок.
+        """
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
             serializer = ShoppingCartSerializer(
@@ -134,8 +136,12 @@ class RecipesViewSet(viewsets.ModelViewSet):
         return create_shopping_cart(ingredients_cart)
 
     def get_serializer_class(self):
-        """Определяет какой сериализатор будет использоваться
-        для разных типов запроса."""
+        """
+        Метод определения сериализатора.
+
+        Определяет какой сериализатор будет использоваться
+        для разных типов запроса.
+        """
         if self.request.method == 'GET':
             return RecipeGETSerializer
         return RecipeSerializer
@@ -144,20 +150,16 @@ class RecipesViewSet(viewsets.ModelViewSet):
         detail=True, methods=['get'], url_path='get-link',
         url_name='get-link', permission_classes=(AllowAny,),
     )
-    def get_link(self, request, pk=None):
+    def get_link(self, request, pk):
         """Возвращает короткую ссылку на рецепт."""
         recipe = get_object_or_404(Recipe, pk=pk)
-        recipe.short_link = get_short_url(recipe)
         return Response(
-            {"short-link": URL + recipe.short_link},
+            {"short-link": URL + str(recipe.short_link)},
             status=status.HTTP_200_OK
         )
 
 
 def short_url(request, pk):
     """Перенаправляет на полную страницу рецепта."""
-    try:
-        Recipe.objects.filter(pk=pk).exists()
-        return redirect('api:recipes-detail', pk=pk)
-    except Exception:
-        raise ValidationError(f'Recipe "{pk}" does not exist.')
+    recipe = get_object_or_404(Recipe, pk=pk)
+    return redirect('api:recipes-detail', pk=recipe.pk)

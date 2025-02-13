@@ -1,14 +1,15 @@
 import os
 from csv import reader
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from foodgram_backend import settings
 from recipes.models import Ingredient, Tag
 
 
 class Command(BaseCommand):
     """Загружает списки ингредиентов и тегов из CSV файлов в базу данных."""
+
     help = 'Загрузка данных из CSV-файлов в базу данных'
 
     def handle(self, *args, **options):

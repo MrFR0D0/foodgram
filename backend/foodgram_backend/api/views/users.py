@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import status
@@ -9,7 +10,7 @@ from rest_framework.response import Response
 
 from api.permissions import AnonimOrAuthenticatedReadOnly
 from users.models import Follow
-from users.serializers import (
+from api.serializers.users import (
     CustomUserSerializer,
     FollowSerializer,
     FollowShowSerializer,
@@ -20,7 +21,7 @@ User = get_user_model()
 
 
 class CustomUserViewSet(UserViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.all()    
     serializer_class = CustomUserSerializer
     permission_classes = (AnonimOrAuthenticatedReadOnly,)
 
@@ -29,8 +30,12 @@ class CustomUserViewSet(UserViewSet):
         url_name='me', permission_classes=(IsAuthenticated,)
     )
     def get_me(self, request):
-        """Позволяет пользователю получить подробную информацию о себе
-        и редактировать её."""
+        """
+        Метод для пользовател.
+
+        Позволяет пользователю получить подробную информацию о себе
+        и редактировать её.
+        """
         if request.method == 'PATCH':
             serializer = CustomUserSerializer(
                 request.user, data=request.data,
@@ -49,10 +54,13 @@ class CustomUserViewSet(UserViewSet):
         url_name='subscribe', permission_classes=(IsAuthenticated,)
     )
     def get_subscribe(self, request, id):
-        """Позволяет текущему пользователю подписываться/отписываться от
-        автора контента, чей профиль он просматривает."""
-        author = get_object_or_404(User, id=id)
+        """
+        Метод для подписчика.
 
+        Позволяет текущему пользователю подписываться/отписываться от
+        автора контента, чей профиль он просматривает.
+        """
+        author = get_object_or_404(User.objects.annotate(recipes_count=Count('recipes')), id=id)
         if request.method == 'POST':
             serializer = FollowSerializer(
                 data={'user': request.user.id, 'author': author.id}
@@ -65,23 +73,28 @@ class CustomUserViewSet(UserViewSet):
             return Response(
                 author_serializer.data, status=status.HTTP_201_CREATED
             )
-
-        try:
-            user = Follow.objects.get(user=request.user, author=author)
-            user.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Follow.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        deleted_count, _ = Follow.objects.filter(
+            user=request.user, author=author
+        ).delete()
+        if deleted_count == 0:
+            return Response(
+                {'error': 'Вы не подписаны на этого автора.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=False, methods=['get'], url_path='subscriptions',
         url_name='subscriptions', permission_classes=(IsAuthenticated,)
     )
     def get_subscriptions(self, request):
-        """Возвращает авторов контента, на которых подписан
-        текущий пользователь."""
+        """
+        Метод для подписчика.
 
-        authors = User.objects.filter(followed__user=request.user)
+        Возвращает авторов контента, на которых подписан
+        текущий пользователь.
+        """
+        authors = User.objects.filter(followed__user=request.user).annotate(recipes_count=Count('recipes'))
         paginator = LimitOffsetPagination()
         result_pages = paginator.paginate_queryset(
             queryset=authors, request=request

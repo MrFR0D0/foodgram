@@ -14,10 +14,12 @@ class UserAdmin(admin.ModelAdmin):
         'first_name',
         'last_name',
         'password',
-        'is_admin'
+        'is_active',
+        'is_staff',
+        'is_superuser',
     )
     empty_value_display = 'значение отсутствует'
-    list_editable = ('is_admin',)
+    list_editable = ('is_active', 'is_staff', 'is_superuser',)
     list_filter = ('username', 'email')
     search_fields = ('username',)
 

@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 
+from recipes.utils import get_short_url
+
 User = get_user_model()
 
 
@@ -20,12 +22,12 @@ class Tag(models.Model):
     )
 
     class Meta:
-        verbose_name = "Тег"
+        verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
         ordering = ('name',)
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 
 
 class Ingredient(models.Model):
@@ -46,7 +48,7 @@ class Ingredient(models.Model):
         verbose_name_plural = 'Ингредиенты'
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 
 
 class Recipe(models.Model):
@@ -62,7 +64,6 @@ class Recipe(models.Model):
     image = models.ImageField(
         upload_to='recipes/images/',
         verbose_name='Картинка, закодированная в Base64',
-        null=True,
         default=None,
         help_text='Добавьте изображение рецепта',
     )
@@ -108,7 +109,7 @@ class Recipe(models.Model):
         default_related_name = 'recipes'
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 
 
 class RecipeIngredient(models.Model):

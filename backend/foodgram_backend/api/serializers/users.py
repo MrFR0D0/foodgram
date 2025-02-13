@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from foodgram_backend import constants
-from foodgram_backend.utilits import Base64ImageField
+from recipes.utils import Base64ImageField
 from recipes.models import Recipe
 from users.models import Follow
 
@@ -14,6 +14,7 @@ User = get_user_model()
 
 class CustomUserCreateSerializer(UserCreateSerializer):
     """Сериализатор для создания объекта класса User."""
+
     username = serializers.CharField(
         max_length=150,
     )
@@ -28,7 +29,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             'last_name',
             'password',
         )
-        extra_kwargs = {"password": {"write_only": True}}
+        extra_kwargs = {'password': {'write_only': True}}
 
     def validate_username(self, value):
         validator = RegexValidator(
@@ -84,7 +85,7 @@ class FollowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Follow
-        fields = '__all__'
+        fields = ('user', 'author')
         validators = [
             UniqueTogetherValidator(
                 queryset=Follow.objects.all(),
@@ -119,7 +120,8 @@ class FollowShowSerializer(CustomUserSerializer):
     """Сериализатор отображения подписок."""
 
     recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
+    # recipes_count = serializers.SerializerMethodField()
+    recipes_count = serializers.IntegerField(default=0, read_only=True)
 
     class Meta:
         model = User
@@ -135,20 +137,30 @@ class FollowShowSerializer(CustomUserSerializer):
             'avatar'
         )
 
+    # def get_recipes(self, object):
+    #     recipes_limit = self.context[
+    #         'request'
+    #     ].query_params.get('recipes_limit')
+    #     author_recipes = object.recipes.all()
+    #     if recipes_limit:
+    #         try:
+    #             recipes_limit = int(recipes_limit)
+    #             author_recipes = author_recipes[:recipes_limit]
+    #         except ValueError:
+    #             pass
+    #     return FollowRecipeShortSerializer(
+    #         author_recipes, many=True
+    #     ).data
+
     def get_recipes(self, object):
         recipes_limit = self.context[
             'request'
         ].query_params.get('recipes_limit')
         author_recipes = object.recipes.all()
-        if recipes_limit:
-            try:
-                recipes_limit = int(recipes_limit)
-                author_recipes = author_recipes[:recipes_limit]
-            except ValueError:
-                pass
-        return FollowRecipeShortSerializer(
-            author_recipes, many=True
-        ).data
+        if recipes_limit and recipes_limit.isnumeric():
+            recipes_limit = int(recipes_limit)
+            author_recipes = author_recipes[:recipes_limit]
+        return FollowRecipeShortSerializer(author_recipes, many=True).data
 
-    def get_recipes_count(self, object):
-        return object.recipes.count()
+    # def get_recipes_count(self, object):
+    #     return object.recipes.count()

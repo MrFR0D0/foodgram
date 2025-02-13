@@ -3,7 +3,7 @@ import io
 
 import base62
 from django.core.files.base import ContentFile
-from django.http import HttpResponse
+from django.http import JsonResponse
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
@@ -21,10 +21,6 @@ class Base64ImageField(serializers.ImageField):
 
 def create_shopping_cart(ingredients_cart):
     """Функция для формирования списка покупок."""
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = (
-        "attachment; filename='shopping_cart.pdf'"
-    )
     pdfmetrics.registerFont(
         TTFont('Arial', 'data/arial.ttf', 'UTF-8')
     )
@@ -51,15 +47,20 @@ def create_shopping_cart(ingredients_cart):
     pdf_file.save()
     pdf = buffer.getvalue()
     buffer.close()
-    response.write(pdf)
-    return response
+
+    pdf_base64 = base64.b64encode(pdf).decode('utf-8')
+    return JsonResponse({
+        'status': 'success',
+        'message': 'Список покупок успешно сформирован.',
+        'pdf': pdf_base64
+    })
 
 
 def generate_short_code(recipe_id):
-    """Генерирует короткий код для рецепта"""
+    """Генерирует короткий код для рецепта."""
     return base62.encode(recipe_id)
 
 
 def get_short_url(recipe):
-    """Возвращает короткий URL для рецепта"""
+    """Возвращает короткий URL для рецепта."""
     return generate_short_code(recipe.id)

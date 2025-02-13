@@ -2,7 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from foodgram_backend.utilits import Base64ImageField
+from recipes.utils import Base64ImageField
 from recipes.models import (
     Favorite,
     Ingredient,
@@ -11,7 +11,8 @@ from recipes.models import (
     ShoppingCart,
     Tag,
 )
-from users.serializers import CustomUserSerializer
+from recipes.utils import get_short_url
+from api.serializers.users import CustomUserSerializer
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -112,9 +113,10 @@ class RecipeGETSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Recipe при небезопасных запросах."""
+
     ingredients = RecipeIngredientSerializer(
         many=True,
-        allow_empty=False
+        allow_empty=False,
     )
     image = Base64ImageField(
         use_url=True,
@@ -137,9 +139,20 @@ class RecipeSerializer(serializers.ModelSerializer):
             'author'
         )
 
+    def create(self, validated_data):
+        author = self.context['request'].user
+        recipe = Recipe.objects.create(author=author, **validated_data)
+        recipe.short_link = get_short_url(recipe)
+        recipe.save()
+        return recipe
+
     def validate_ingredients(self, ingredients):
-        """Проверяем, что рецепт содержит уникальные ингредиенты
-        и их количество не меньше 1."""
+        """
+        Метод валидации ингридиентов.
+
+        Проверяем, что рецепт содержит уникальные ингредиенты
+        и их количество не меньше 1.
+        """
         ingredients_data = [
             ingredient.get('id') for ingredient in ingredients
         ]
@@ -190,26 +203,16 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        if 'ingredients' not in validated_data:
-            raise serializers.ValidationError()
-        elif 'tags' not in validated_data:
-            raise serializers.ValidationError()
-        recipe = instance
-        instance.image = validated_data.get('image', instance.image)
-        instance.name = validated_data.get('name', instance.name)
-        instance.text = validated_data.get('text', instance.name)
-        instance.cooking_time = validated_data.get(
-            'cooking_time', instance.cooking_time
-        )
         instance.tags.clear()
         instance.ingredients.clear()
         tags_data = validated_data.get('tags')
         instance.tags.set(tags_data)
         ingredients_data = validated_data.get('ingredients')
-        RecipeIngredient.objects.filter(recipe=recipe).delete()
-        self.add_ingredients(ingredients_data, recipe)
-        instance.save()
-        return instance
+        RecipeIngredient.objects.filter(recipe=instance).delete()
+        self.add_ingredients(ingredients_data, instance)
+        validated_data.pop('ingredients', None)
+        validated_data.pop('tags', None)
+        return super().update(instance, validated_data)
 
     def to_representation(self, recipe):
         """Определяет какой сериализатор будет использоваться для чтения."""
@@ -233,7 +236,7 @@ class RecipeShortSerializer(serializers.ModelSerializer):
 class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
-        fields = '__all__'
+        fields = ('user', 'recipe')
         validators = [
             UniqueTogetherValidator(
                 queryset=Favorite.objects.all(),
@@ -243,24 +246,12 @@ class FavoriteSerializer(serializers.ModelSerializer):
         ]
 
 
-# class RecipeShortLinkSerializer(serializers.ModelSerializer):
-#     """Сериализатор для отображения короткой ссылки рецептов."""
-
-#     short_link = serializers.CharField(sourse='get_short_url')
-
-#     class Meta:
-#         model = Recipe
-#         fields = (
-#             'short_link',
-#         )
-
-
 class ShoppingCartSerializer(serializers.ModelSerializer):
     """Сериализатор для модели ShoppingCart."""
 
     class Meta:
         model = ShoppingCart
-        fields = '__all__'
+        fields = ('user', 'recipe')
         validators = [
             UniqueTogetherValidator(
                 queryset=ShoppingCart.objects.all(),
