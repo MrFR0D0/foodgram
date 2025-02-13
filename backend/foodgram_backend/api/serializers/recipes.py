@@ -117,6 +117,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = RecipeIngredientSerializer(
         many=True,
         allow_empty=False,
+        required=True,
     )
     image = Base64ImageField(
         use_url=True,
@@ -138,13 +139,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             'cooking_time',
             'author'
         )
-
-    def create(self, validated_data):
-        author = self.context['request'].user
-        recipe = Recipe.objects.create(author=author, **validated_data)
-        recipe.short_link = get_short_url(recipe)
-        recipe.save()
-        return recipe
 
     def validate_ingredients(self, ingredients):
         """
@@ -169,6 +163,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     'Количество ингредиента не может быть больше 100'
                 )
+        
         return ingredients
 
     def validate_tags(self, tags):
@@ -203,6 +198,10 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
+        # if 'ingredients' not in validated_data:
+        #     raise serializers.ValidationError() 
+        # elif 'tags' not in validated_data: 
+        #     raise serializers.ValidationError()
         instance.tags.clear()
         instance.ingredients.clear()
         tags_data = validated_data.get('tags')
