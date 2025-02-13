@@ -3,7 +3,7 @@
 import os
 import sys
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 
 def main():
@@ -24,5 +24,5 @@ def main():
 
 
 if __name__ == '__main__':
-    load_dotenv()
+    # load_dotenv()
     main()

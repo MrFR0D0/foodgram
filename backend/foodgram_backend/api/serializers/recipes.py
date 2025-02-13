@@ -18,6 +18,7 @@ from api.serializers.users import CustomUserSerializer
 class TagSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         max_length=32,
+        required=True
     )
 
     class Meta:
@@ -198,10 +199,10 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        # if 'ingredients' not in validated_data:
-        #     raise serializers.ValidationError() 
-        # elif 'tags' not in validated_data: 
-        #     raise serializers.ValidationError()
+        if 'ingredients' not in validated_data:
+            raise serializers.ValidationError() 
+        elif 'tags' not in validated_data: 
+            raise serializers.ValidationError()
         instance.tags.clear()
         instance.ingredients.clear()
         tags_data = validated_data.get('tags')
