@@ -19,6 +19,12 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
 
+## [API документация](https://dimon-foodgram.hopto.org/api/docs/)
+
+## [Администрирование](https://dimon-foodgram.hopto.org/admin/)
+
+    Email: Dima@dima.ru
+    Password: 1
 
 ## Запуск проекта на удаленном сервере
 
@@ -51,6 +57,7 @@ DB_PORT=5432
 SECRET_KEY=ключ приложения django
 DEBUG=True/False
 ALLOWED_HOSTS=разрешенные хосты(your.domain.com)
+CSRF_TRUSTED_ORIGINS=разрешенные хосты с протоколами (https://your.domain.com)
 ```        
 4. Запустить Docker compose:
 ``` bash

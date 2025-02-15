@@ -71,25 +71,22 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('author', 'name', 'tags')
     search_fields = ('author', 'name')
 
+    @admin.display(description='ингредиенты')
     def get_ingredients(self, object):
         """Получает ингредиент или список ингредиентов рецепта."""
         return '\n'.join(
             (ingredient.name for ingredient in object.ingredients.all())
         )
 
-    get_ingredients.short_description = 'ингредиенты'
-
+    @admin.display(description='тэги')
     def get_tags(self, object):
         """Получает тег или список тегов рецепта."""
         return '\n'.join((tag.name for tag in object.tags.all()))
 
-    get_tags.short_description = 'теги'
-
+    @admin.display(description='количество добавлений в избранное')
     def count_favorite(self, object):
         """Вычисляет количество добавлений рецепта в избранное."""
         return object.favoriting.count()
-
-    count_favorite.short_description = 'Количество добавлений в избранное'
 
 
 @admin.register(RecipeIngredient)
