@@ -30,8 +30,7 @@ class CustomUserViewSet(UserViewSet):
         url_name='me', permission_classes=(IsAuthenticated,)
     )
     def get_me(self, request):
-        """
-        Метод для пользовател.
+        """Метод для пользовател.
 
         Позволяет пользователю получить подробную информацию о себе
         и редактировать её.
@@ -54,16 +53,15 @@ class CustomUserViewSet(UserViewSet):
         url_name='subscribe', permission_classes=(IsAuthenticated,)
     )
     def get_subscribe(self, request, id):
-        """
-        Метод для подписчика.
+        """Метод для подписчика.
 
         Позволяет текущему пользователю подписываться/отписываться от
         автора контента, чей профиль он просматривает.
         """
-        author = get_object_or_404(User.objects.annotate(
-            recipes_count=Count('recipes')
-        ), id=id)
         if request.method == 'POST':
+            author = get_object_or_404(
+                User.objects.annotate(recipes_count=Count('recipes')), id=id
+            )
             serializer = FollowSerializer(
                 data={'user': request.user.id, 'author': author.id}
             )
@@ -75,23 +73,22 @@ class CustomUserViewSet(UserViewSet):
             return Response(
                 author_serializer.data, status=status.HTTP_201_CREATED
             )
-        deleted_count, _ = Follow.objects.filter(
+        author = get_object_or_404(User, id=id)
+        if Follow.objects.filter(
             user=request.user, author=author
-        ).delete()
-        if deleted_count == 0:
-            return Response(
-                {'error': 'Вы не подписаны на этого автора.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        ).delete()[0]:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {'error': 'Вы не подписаны на этого автора.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     @action(
         detail=False, methods=['get'], url_path='subscriptions',
         url_name='subscriptions', permission_classes=(IsAuthenticated,)
     )
     def get_subscriptions(self, request):
-        """
-        Метод для подписчика.
+        """Метод для подписчика.
 
         Возвращает авторов контента, на которых подписан
         текущий пользователь.

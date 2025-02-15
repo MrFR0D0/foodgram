@@ -15,10 +15,6 @@ User = get_user_model()
 class CustomUserCreateSerializer(UserCreateSerializer):
     """Сериализатор для создания объекта класса User."""
 
-    username = serializers.CharField(
-        max_length=150,
-    )
-
     class Meta:
         model = User
         fields = (
@@ -120,7 +116,6 @@ class FollowShowSerializer(CustomUserSerializer):
     """Сериализатор отображения подписок."""
 
     recipes = serializers.SerializerMethodField()
-    # recipes_count = serializers.SerializerMethodField()
     recipes_count = serializers.IntegerField(default=0, read_only=True)
 
     class Meta:
@@ -137,21 +132,6 @@ class FollowShowSerializer(CustomUserSerializer):
             'avatar'
         )
 
-    # def get_recipes(self, object):
-    #     recipes_limit = self.context[
-    #         'request'
-    #     ].query_params.get('recipes_limit')
-    #     author_recipes = object.recipes.all()
-    #     if recipes_limit:
-    #         try:
-    #             recipes_limit = int(recipes_limit)
-    #             author_recipes = author_recipes[:recipes_limit]
-    #         except ValueError:
-    #             pass
-    #     return FollowRecipeShortSerializer(
-    #         author_recipes, many=True
-    #     ).data
-
     def get_recipes(self, object):
         recipes_limit = self.context[
             'request'
@@ -161,6 +141,3 @@ class FollowShowSerializer(CustomUserSerializer):
             recipes_limit = int(recipes_limit)
             author_recipes = author_recipes[:recipes_limit]
         return FollowRecipeShortSerializer(author_recipes, many=True).data
-
-    # def get_recipes_count(self, object):
-    #     return object.recipes.count()

@@ -15,11 +15,6 @@ from recipes.utils import Base64ImageField
 
 
 class TagSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(
-        max_length=32,
-        required=True
-    )
-
     class Meta:
         model = Tag
         fields = ('id', 'name', 'slug')
@@ -141,8 +136,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
     def validate_ingredients(self, ingredients):
-        """
-        Метод валидации ингридиентов.
+        """Метод валидации ингридиентов.
 
         Проверяем, что рецепт содержит уникальные ингредиенты
         и их количество не меньше 1.
@@ -173,6 +167,21 @@ class RecipeSerializer(serializers.ModelSerializer):
             )
         return tags
 
+    def validate(self, data):
+        """Метод валидации всех данных.
+
+        Проверяем наличие обязательных полей ingredients и tags.
+        """
+        if 'ingredients' not in data:
+            raise serializers.ValidationError(
+                {'ingredients': 'Это поле обязательно.'}
+            )
+        if 'tags' not in data:
+            raise serializers.ValidationError(
+                {'tags': 'Это поле обязательно.'}
+            )
+        return data
+
     @staticmethod
     def add_ingredients(ingredients_data, recipe):
         """Добавляет ингредиенты."""
@@ -185,31 +194,30 @@ class RecipeSerializer(serializers.ModelSerializer):
             for ingredient in ingredients_data
         ])
 
+    def update_tags_and_ingredients(self, recipe, tags_data, ingredients_data):
+        """Обновляет теги и ингредиенты рецепта.
+
+        Очищает существующие теги и ингредиенты, затем добавляет новые.
+        """
+        recipe.tags.clear()
+        RecipeIngredient.objects.filter(recipe=recipe).delete()
+        recipe.tags.set(tags_data)
+        self.add_ingredients(ingredients_data, recipe)
+
     @transaction.atomic
     def create(self, validated_data):
         author = self.context.get('request').user
         tags_data = validated_data.pop('tags')
         ingredients_data = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(author=author, **validated_data)
-        recipe.tags.set(tags_data)
-        self.add_ingredients(ingredients_data, recipe)
+        self.update_tags_and_ingredients(recipe, tags_data, ingredients_data)
         return recipe
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        if 'ingredients' not in validated_data:
-            raise serializers.ValidationError()
-        elif 'tags' not in validated_data:
-            raise serializers.ValidationError()
-        instance.tags.clear()
-        instance.ingredients.clear()
-        tags_data = validated_data.get('tags')
-        instance.tags.set(tags_data)
-        ingredients_data = validated_data.get('ingredients')
-        RecipeIngredient.objects.filter(recipe=instance).delete()
-        self.add_ingredients(ingredients_data, instance)
-        validated_data.pop('ingredients', None)
-        validated_data.pop('tags', None)
+        tags_data = validated_data.pop('tags')
+        ingredients_data = validated_data.pop('ingredients')
+        self.update_tags_and_ingredients(instance, tags_data, ingredients_data)
         return super().update(instance, validated_data)
 
     def to_representation(self, recipe):

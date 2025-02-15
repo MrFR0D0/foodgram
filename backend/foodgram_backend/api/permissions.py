@@ -2,8 +2,7 @@ from rest_framework import permissions
 
 
 class AnonimOrAuthenticatedReadOnly(permissions.BasePermission):
-    """
-    Кастомный пермишен.
+    """Кастомный пермишен.
 
     Разрешает анонимному или авторизованному пользователю
     только безопасные запросы.
@@ -17,8 +16,7 @@ class AnonimOrAuthenticatedReadOnly(permissions.BasePermission):
 
 
 class AuthorOrReadOnly(permissions.BasePermission):
-    """
-    Кастомный пермишен.
+    """Кастомный пермишен.
 
     Предоставляет права на осуществление опасных методов запроса
     только автору объекта, в остальных случаях

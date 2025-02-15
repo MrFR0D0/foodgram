@@ -1,4 +1,5 @@
 from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
@@ -77,11 +78,9 @@ class RecipesViewSet(viewsets.ModelViewSet):
             return Response(
                 favorite_serializer.data, status=status.HTTP_201_CREATED
             )
-        favorite_recipe = Favorite.objects.filter(
+        if Favorite.objects.filter(
             user=request.user, recipe=recipe
-        ).first()
-        if favorite_recipe:
-            favorite_recipe.delete()
+        ).delete()[0]:
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -90,8 +89,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         url_name='shopping_cart', permission_classes=(IsAuthenticated,)
     )
     def get_shopping_cart(self, request, pk):
-        """
-        Метод списка покупок.
+        """Метод списка покупок.
 
         Позволяет текущему пользователю добавлять/удалять рецепты
         в список покупок.
@@ -107,15 +105,11 @@ class RecipesViewSet(viewsets.ModelViewSet):
             return Response(
                 shopping_cart_serializer.data, status=status.HTTP_201_CREATED
             )
-        elif request.method == 'DELETE':
-            shopping_cart_recipe = ShoppingCart.objects.filter(
-                user=request.user, recipe=recipe
-            ).first()
-            if shopping_cart_recipe:
-                shopping_cart_recipe.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            else:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+        if ShoppingCart.objects.filter(
+            user=request.user, recipe=recipe
+        ).delete()[0]:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         url_name='download_shopping_cart', url_path='download_shopping_cart',
@@ -132,11 +126,14 @@ class RecipesViewSet(viewsets.ModelViewSet):
                 'ingredient__name'
             ).annotate(ingredient_value=Sum('amount'))
         )
-        return create_shopping_cart(ingredients_cart)
+        buffer = create_shopping_cart(ingredients_cart)
+        return HttpResponse(
+            buffer,
+            content_type='text/plain'
+        )
 
     def get_serializer_class(self):
-        """
-        Метод определения сериализатора.
+        """Метод определения сериализатора.
 
         Определяет какой сериализатор будет использоваться
         для разных типов запроса.
@@ -153,7 +150,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         """Возвращает короткую ссылку на рецепт."""
         recipe = get_object_or_404(Recipe, pk=pk)
         return Response(
-            {'short-link': URL + str(recipe.short_link)},
+            {'short-link': URL + f'{recipe.short_link}'},
             status=status.HTTP_200_OK
         )
 
