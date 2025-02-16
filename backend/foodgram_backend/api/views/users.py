@@ -77,11 +77,6 @@ class CustomUserViewSet(UserViewSet):
             user=request.user, author__id=id
         ).delete()
         if deleted_count == 0:
-            # Дополнительный запрос к БД (осознанно), для определения
-            # причины невозможности удаления: User с заданным id
-            # не существует или объект отсутствует в списке
-            if not User.objects.filter(id=id).exists():
-                return Response(status=status.HTTP_404_NOT_FOUND)
             return Response(
                 {'error': 'Вы не подписаны на этого автора.'},
                 status=status.HTTP_400_BAD_REQUEST

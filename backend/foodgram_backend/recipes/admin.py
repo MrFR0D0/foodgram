@@ -19,8 +19,8 @@ class TagAdmin(admin.ModelAdmin):
         'name',
         'slug'
     )
+    list_display_links = ('pk', 'name',)
     empty_value_display = 'значение отсутствует'
-    list_filter = ('name',)
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
 
@@ -34,8 +34,8 @@ class IngredientAdmin(admin.ModelAdmin):
         'name',
         'measurement_unit'
     )
+    list_display_links = ('pk', 'name',)
     empty_value_display = 'значение отсутствует'
-    list_filter = ('name',)
     search_fields = ('name',)
 
 
@@ -65,11 +65,17 @@ class RecipeAdmin(admin.ModelAdmin):
     inlines = [
         IngredientAmountInline,
     ]
-
+    list_display_links = ('pk', 'name',)
     empty_value_display = 'значение отсутствует'
-    list_editable = ('author',)
-    list_filter = ('author', 'name', 'tags')
-    search_fields = ('author', 'name')
+    list_filter = ('tags', 'author',)
+    search_fields = ('name',)
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.select_related(
+            'author'
+        ).prefetch_related('tags', 'recipe_ingredients__ingredient')
+        return queryset
 
     def get_ingredients(self, object):
         """Получает ингредиент или список ингредиентов рецепта."""
@@ -93,14 +99,14 @@ class RecipeAdmin(admin.ModelAdmin):
 
 
 @admin.register(RecipeIngredient)
-class IngredientAmountAdmin(admin.ModelAdmin):
+class RecipeIngredientAdmin(admin.ModelAdmin):
     """Класс настройки соответствия игредиентов и рецептов."""
 
     list_display = (
         'pk',
+        'recipe',
         'ingredient',
         'amount',
-        'recipe'
     )
     empty_value_display = 'значение отсутствует'
 
@@ -115,10 +121,17 @@ class FavoriteAdmin(admin.ModelAdmin):
         'recipe',
     )
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.select_related(
+            'user', 'recipe__author'
+        ).prefetch_related(
+            'recipe__tags',
+            'recipe__recipe_ingredients__ingredient'
+        )
+        return queryset
+
     empty_value_display = 'значение отсутствует'
-    list_editable = ('user', 'recipe')
-    list_filter = ('user',)
-    search_fields = ('user',)
 
 
 @admin.register(ShoppingCart)
@@ -130,8 +143,16 @@ class ShoppingCartAdmin(admin.ModelAdmin):
         'user',
         'recipe',
     )
+    list_display_links = ('pk', 'user',)
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.select_related(
+            'user', 'recipe__author'
+        ).prefetch_related(
+            'recipe__tags',
+            'recipe__recipe_ingredients__ingredient'
+        )
+        return queryset
 
     empty_value_display = 'значение отсутствует'
-    list_editable = ('user', 'recipe')
-    list_filter = ('user',)
-    search_fields = ('user',)

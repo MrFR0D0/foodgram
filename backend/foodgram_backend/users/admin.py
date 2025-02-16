@@ -1,27 +1,32 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
 from .models import Follow, User
 
 
 @admin.register(User)
-class UserAdmin(admin.ModelAdmin):
+class UserAdmin(UserAdmin):
     """Класс настройки раздела пользователей."""
 
     list_display = (
         'pk',
-        'username',
         'email',
+        'username',
         'first_name',
         'last_name',
-        'password',
         'is_active',
         'is_staff',
         'is_superuser',
+        'get_subscribers',
     )
+    list_display_links = ('pk', 'email',)
     empty_value_display = 'значение отсутствует'
-    list_editable = ('is_active', 'is_staff', 'is_superuser',)
-    list_filter = ('username', 'email')
-    search_fields = ('username',)
+    list_filter = ('is_active', 'is_staff',)
+    search_fields = ('username', 'email', 'first_name', 'last_name')
+
+    @admin.display(description='Подписчики')
+    def get_subscribers(self, object):
+        return object.follower.count()
 
 
 @admin.register(Follow)
@@ -34,9 +39,10 @@ class FollowAdmin(admin.ModelAdmin):
         'user',
     )
 
-    list_editable = ('author', 'user')
-    list_filter = ('author',)
-    search_fields = ('author',)
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.select_related('user', 'author')
+        return queryset
 
 
 admin.site.site_title = 'Администрирование Foodgram'

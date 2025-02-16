@@ -78,11 +78,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
             user=request.user, recipe__id=pk
         ).delete()
         if deleted_count == 0:
-            # Дополнительный запрос к БД (осознанно), для определения
-            # причины невозможности удаления: Recipe с заданным pk
-            # не существует или объект отсутствует в списке
-            if not Recipe.objects.filter(pk=pk).exists():
-                return Response(status=status.HTTP_404_NOT_FOUND)
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
