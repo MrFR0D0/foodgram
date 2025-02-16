@@ -4,7 +4,6 @@ from django.shortcuts import get_object_or_404, redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
@@ -14,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from api.filters import IngredientFilter, RecipeFilter
+from api.pagination import CustomPagination
 from api.permissions import AuthorOrReadOnly
 from api.serializers.recipes import (
     FavoriteSerializer,
@@ -60,7 +60,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly, AuthorOrReadOnly)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-    pagination_class = LimitOffsetPagination
+    pagination_class = CustomPagination
 
     def base_post_or_delete(self, request, pk, model, serializer_class):
         if request.method == 'POST':
