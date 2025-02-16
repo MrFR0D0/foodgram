@@ -11,6 +11,7 @@ from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly,
 )
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 from api.filters import IngredientFilter, RecipeFilter
 from api.permissions import AuthorOrReadOnly
@@ -23,7 +24,6 @@ from api.serializers.recipes import (
     ShoppingCartSerializer,
     TagSerializer,
 )
-from foodgram_backend.constants import URL
 from recipes.models import (
     Favorite,
     Ingredient,
@@ -62,27 +62,39 @@ class RecipesViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilter
     pagination_class = LimitOffsetPagination
 
+    def base_post_or_delete(self, request, pk, model, serializer_class):
+        if request.method == 'POST':
+            recipe = get_object_or_404(Recipe, pk=pk)
+            serializer = serializer_class(
+                data={'user': request.user.id, 'recipe': recipe.id}
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            object_serializer = RecipeShortSerializer(recipe)
+            return Response(
+                object_serializer.data, status=status.HTTP_201_CREATED
+            )
+        deleted_count, _ = model.objects.filter(
+            user=request.user, recipe__id=pk
+        ).delete()
+        if deleted_count == 0:
+            # Дополнительный запрос к БД (осознанно), для определения
+            # причины невозможности удаления: Recipe с заданным pk
+            # не существует или объект отсутствует в списке
+            if not Recipe.objects.filter(pk=pk).exists():
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     @action(
         detail=True, methods=['post', 'delete'], url_path='favorite',
         url_name='favorite', permission_classes=(IsAuthenticated,)
     )
     def get_favorite(self, request, pk):
-        recipe = get_object_or_404(Recipe, pk=pk)
-        if request.method == 'POST':
-            serializer = FavoriteSerializer(
-                data={'user': request.user.id, 'recipe': recipe.id}
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            favorite_serializer = RecipeShortSerializer(recipe)
-            return Response(
-                favorite_serializer.data, status=status.HTTP_201_CREATED
-            )
-        if Favorite.objects.filter(
-            user=request.user, recipe=recipe
-        ).delete()[0]:
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return self.base_post_or_delete(
+            request=request, pk=pk, model=Favorite,
+            serializer_class=FavoriteSerializer,
+        )
 
     @action(
         detail=True, methods=['post', 'delete'], url_path='shopping_cart',
@@ -94,22 +106,10 @@ class RecipesViewSet(viewsets.ModelViewSet):
         Позволяет текущему пользователю добавлять/удалять рецепты
         в список покупок.
         """
-        recipe = get_object_or_404(Recipe, pk=pk)
-        if request.method == 'POST':
-            serializer = ShoppingCartSerializer(
-                data={'user': request.user.id, 'recipe': recipe.id}
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            shopping_cart_serializer = RecipeShortSerializer(recipe)
-            return Response(
-                shopping_cart_serializer.data, status=status.HTTP_201_CREATED
-            )
-        if ShoppingCart.objects.filter(
-            user=request.user, recipe=recipe
-        ).delete()[0]:
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return self.base_post_or_delete(
+            request=request, pk=pk, model=ShoppingCart,
+            serializer_class=ShoppingCartSerializer,
+        )
 
     @action(
         url_name='download_shopping_cart', url_path='download_shopping_cart',
@@ -146,16 +146,21 @@ class RecipesViewSet(viewsets.ModelViewSet):
         detail=True, methods=['get'], url_path='get-link',
         url_name='get-link', permission_classes=(AllowAny,),
     )
-    def get_link(self, request, pk):
+    def get_short_link(self, request, pk):
         """Возвращает короткую ссылку на рецепт."""
         recipe = get_object_or_404(Recipe, pk=pk)
+        rev_link = reverse('short_url', args=[recipe.pk])
         return Response(
-            {'short-link': URL + f'{recipe.short_link}'},
+            {'short-link': request.build_absolute_uri(rev_link)},
             status=status.HTTP_200_OK
         )
 
 
-def short_url(request, pk):
-    """Перенаправляет на полную страницу рецепта."""
-    recipe = get_object_or_404(Recipe, pk=pk)
-    return redirect('api:recipes-detail', pk=recipe.pk)
+def short_url(request, short_link):
+    """Редирект с короткой ссылки."""
+    link = request.build_absolute_uri()
+    recipe = get_object_or_404(Recipe, short_link=link)
+    return redirect(
+        'api:recipe-detail',
+        pk=recipe.id
+    )

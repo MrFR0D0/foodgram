@@ -73,15 +73,20 @@ class CustomUserViewSet(UserViewSet):
             return Response(
                 author_serializer.data, status=status.HTTP_201_CREATED
             )
-        author = get_object_or_404(User, id=id)
-        if Follow.objects.filter(
-            user=request.user, author=author
-        ).delete()[0]:
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(
-            {'error': 'Вы не подписаны на этого автора.'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        deleted_count, _ = Follow.objects.filter(
+            user=request.user, author__id=id
+        ).delete()
+        if deleted_count == 0:
+            # Дополнительный запрос к БД (осознанно), для определения
+            # причины невозможности удаления: User с заданным id
+            # не существует или объект отсутствует в списке
+            if not User.objects.filter(id=id).exists():
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {'error': 'Вы не подписаны на этого автора.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=False, methods=['get'], url_path='subscriptions',
