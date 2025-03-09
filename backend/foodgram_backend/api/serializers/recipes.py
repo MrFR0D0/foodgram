@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from api.serializers.users import CustomUserSerializer
+from foodgram_backend import constants
 from recipes.models import (
     Favorite,
     Ingredient,
@@ -149,13 +150,15 @@ class RecipeSerializer(serializers.ModelSerializer):
                 'Ингредиенты рецепта должны быть уникальными'
             )
         for ingredient in ingredients:
-            if int(ingredient.get('amount')) < 1:
+            if int(ingredient.get('amount')) < constants.MIN_INGREDIENT_AMOUNT:
                 raise serializers.ValidationError(
-                    'Количество ингредиента не может быть меньше 1'
+                    'Количество ингредиента не может быть '
+                    f'меньше {constants.MIN_INGREDIENT_AMOUNT}.'
                 )
-            if int(ingredient.get('amount')) > 100:
+            if int(ingredient.get('amount')) > constants.MAX_INGREDIENT_AMOUNT:
                 raise serializers.ValidationError(
-                    'Количество ингредиента не может быть больше 100'
+                    'Количество ингредиента не может быть '
+                    f'больше {constants.MAX_INGREDIENT_AMOUNT}.'
                 )
         return ingredients
 
@@ -163,7 +166,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         """Проверяем, что рецепт содержит уникальные теги."""
         if len(tags) != len(set(tags)):
             raise serializers.ValidationError(
-                'Теги рецепта должны быть уникальными'
+                'Теги рецепта должны быть уникальными.'
             )
         return tags
 
@@ -262,6 +265,6 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
             UniqueTogetherValidator(
                 queryset=ShoppingCart.objects.all(),
                 fields=('user', 'recipe'),
-                message='Вы уже добавляли это рецепт в список покупок'
+                message='Вы уже добавляли этот рецепт в список покупок'
             )
         ]

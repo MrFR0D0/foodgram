@@ -22,13 +22,13 @@ class User(AbstractUser):
 
     email = models.EmailField(
         unique=True,
-        max_length=254,
+        max_length=constants.MAX_EMAIL_LENGHT,
         verbose_name='Адрес электронной почты',
         help_text='Введите свой адрес электронной почты'
     )
     username = models.CharField(
         verbose_name='Уникальный юзернейм',
-        max_length=150,
+        max_length=constants.MAX_USERNAME_LENGHT,
         unique=True,
         validators=[RegexValidator(
             regex=constants.USERNAME_CHECK,
@@ -37,16 +37,16 @@ class User(AbstractUser):
     )
     first_name = models.CharField(
         verbose_name='Имя',
-        max_length=150,
+        max_length=constants.MAX_FIRST_NAME_LENGHT,
         help_text='Введите свое имя',
     )
     last_name = models.CharField(
         verbose_name='Фамилия',
         help_text='Введите свою фамилию',
-        max_length=150,
+        max_length=constants.MAX_LAST_NAME_LENGHT,
     )
     role = models.CharField(
-        max_length=15,
+        max_length=constants.MAX_ROLE_LENGHT,
         choices=ROLE_USER,
         default=USER,
         verbose_name='Пользовательская роль'

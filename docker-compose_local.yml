@@ -13,7 +13,8 @@ services:
       - postgres_data:/var/lib/postgresql/data/
 
   backend:
-    image: dimanikolaev/foodgram_backend:latest
+    build: ./backend/foodgram_backend
+    # image: dimanikolaev/foodgram_backend:latest
     restart: always
     volumes:
       - static:/collected_static/
@@ -23,14 +24,16 @@ services:
     env_file: .env
 
   frontend:
-    image: dimanikolaev/foodgram_frontend:latest
+    build: ./frontend
+    # image: dimanikolaev/foodgram_frontend:latest
     env_file: .env
     command: cp -r /app/build/. /static/
     volumes:
       - static:/static
 
   gateway:
-    image: dimanikolaev/foodgram_gateway:latest
+    build: ./nginx
+    # image: dimanikolaev/foodgram_gateway:latest
     container_name: foodgram-proxy
     ports:
       - 8000:80

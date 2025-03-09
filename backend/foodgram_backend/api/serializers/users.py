@@ -25,7 +25,10 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             'last_name',
             'password',
         )
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'username': {'max_length': constants.MAX_USERNAME_LENGHT}
+        }
 
     def validate_username(self, value):
         validator = RegexValidator(
@@ -33,6 +36,8 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             message='Имя пользователя содержит недопустимый символ'
         )
         validator(value)
+        if value == constants.NOT_ALLOWED_USERNAME:
+            raise serializers.ValidationError('недопустимое имя')
         return value
 
 

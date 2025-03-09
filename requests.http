@@ -79,8 +79,8 @@ POST http://127.0.0.1:8000/api/users/
 Content-Type: application/json
 
 {
-    "email": "Dima3@dima.ru",
-    "username": "Dima",
+    "email": "Dim8/a2@dima.ru",
+    "username": "me",
     "first_name": "Вася",
     "last_name": "Иванов",
     "password": "Password1234!1"

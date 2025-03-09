@@ -2,18 +2,20 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 
+from foodgram_backend import constants
+
 User = get_user_model()
 
 
 class Tag(models.Model):
     name = models.CharField(
-        max_length=32,
+        max_length=constants.MAX_TAG_LENGHT,
         unique=True,
         verbose_name='Уникальное название',
         help_text='Введите название тега',
     )
     slug = models.SlugField(
-        max_length=32,
+        max_length=constants.MAX_SLUG_LENGHT,
         verbose_name='Уникальный слаг',
         unique=True,
         help_text='Укажите уникальный слаг',
@@ -30,12 +32,12 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(
-        max_length=128,
+        max_length=constants.MAX_INGREDIENT_NAME_LENGHT,
         verbose_name='Название',
         help_text='Введите название ингредиента',
     )
     measurement_unit = models.CharField(
-        max_length=64,
+        max_length=constants.MAX_MEASUREMENT_UNIT_LENGHT,
         verbose_name='Единицы измерения',
         help_text='Введите единицу измерения',
     )
@@ -66,7 +68,7 @@ class Recipe(models.Model):
         help_text='Добавьте изображение рецепта',
     )
     name = models.CharField(
-        max_length=256,
+        max_length=constants.MAX_RECIPE_NAME_LENGHT,
         verbose_name='Название рецепта',
         help_text='Введите название рецепта',
     )
@@ -77,7 +79,7 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления (в минутах)',
         validators=[MinValueValidator(
-            1,
+            constants.MIN_COOKING_TIME,
             'Время приготовления должно быть не меньше 1 минуты'
         )],
         help_text='Укажите время приготовления рецепта в минутах',
@@ -94,7 +96,7 @@ class Recipe(models.Model):
     )
     short_link = models.CharField(
         verbose_name='Короткая ссылка',
-        max_length=20,
+        max_length=constants.MAX_SHORT_LINK_LENGHT,
         blank=True,
         null=True,
         unique=True,
@@ -125,7 +127,7 @@ class RecipeIngredient(models.Model):
     )
     amount = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(
-            1,
+            constants.MIN_INGREDIENT_AMOUNT,
             'Минимальное количество ингредиентов 1'
         )],
         help_text='Укажите количество ингредиента')
