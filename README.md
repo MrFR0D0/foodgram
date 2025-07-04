@@ -57,8 +57,7 @@ sudo sh ./get-docker.sh
 ```bash    
 sudo apt-get install docker-compose-plugin
 ```
-
-2. Скачать файл [docker-compose.production.yml](https://github.com/MrFR0D/foodgram/blob/main/docker-compose.yml) на свой сервер.
+2. Скачать файл [docker-compose.yml](https://github.com/MrFR0D0/foodgram/blob/main/docker-compose.yml) на свой сервер.
 
 3. На сервере в директории с файлом **docker-compose.yml** создать файл  **.env**:
 ``` bash    
