@@ -142,3 +142,5 @@ static/
 media/
 
 requests.http
+
+.DS_Store

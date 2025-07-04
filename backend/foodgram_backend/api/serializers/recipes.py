@@ -67,9 +67,11 @@ class RecipeGETSerializer(serializers.ModelSerializer):
 
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
-    ingredients = serializers.SerializerMethodField()
-    is_favorited = serializers.SerializerMethodField(read_only=True)
-    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
+    ingredients = FullIngredientSerializer(
+        many=True, read_only=True, source='recipe_ingredients'
+    )
+    is_favorited = serializers.BooleanField(read_only=True)
+    is_in_shopping_cart = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Recipe
@@ -86,25 +88,7 @@ class RecipeGETSerializer(serializers.ModelSerializer):
             'cooking_time'
         )
 
-    @staticmethod
-    def get_ingredients(object):
-        """Получает ингредиенты из модели RecipeIngredient."""
-        ingredients = RecipeIngredient.objects.filter(recipe=object)
-        return FullIngredientSerializer(ingredients, many=True).data
-
-    def get_is_favorited(self, object):
-        """Проверяет, добавил ли текущий пользователь рецепт в избранное."""
-        request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
-            return False
-        return request.user.favorite.filter(recipe=object).exists()
-
-    def get_is_in_shopping_cart(self, object):
-        """Проверяет, добавил ли текущий пользователь рецепт в корзину."""
-        request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
-            return False
-        return request.user.shopping_cart.filter(recipe=object).exists()
+    
 
 
 class RecipeSerializer(serializers.ModelSerializer):

@@ -7,27 +7,49 @@ volumes:
 
 services:
   db:
-    image: postgres:13.10
-    env_file: .env
+    image: postgres:13.0-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U django_user -d django"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
-    build: ./backend/foodgram_backend
-    # image: dimanikolaev/foodgram_backend:latest
+    build:
+      context: ./backend/foodgram_backend
+      dockerfile: Dockerfile
     restart: always
     volumes:
-      - static:/collected_static/
+      - static:/app/django_static/
       - media:/app/media/
     depends_on:
-      - db
-    env_file: .env
+      db:
+        condition: service_healthy
+    env_file:
+      - ./.env
+    command: >
+      sh -c "
+        echo 'Waiting for PostgreSQL...'
+        while ! pg_isready -h db -p 5432 -U django_user; do
+          sleep 1
+        done
+        echo 'PostgreSQL started'
+        python manage.py makemigrations
+        python manage.py migrate
+        python manage.py import_data
+        python manage.py collectstatic --noinput
+        gunicorn foodgram_backend.wsgi:application --bind 0.0.0.0:8000
+      "
 
   frontend:
     build: ./frontend
     # image: dimanikolaev/foodgram_frontend:latest
     env_file: .env
-    command: cp -r /app/build/. /static/
+    command: cp -r /app/build/. /static/frontend/
     volumes:
       - static:/static
 

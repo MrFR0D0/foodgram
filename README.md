@@ -1,6 +1,5 @@
 [![Main Foodgram workflow](https://github.com/MrFR0D0/foodgram/actions/workflows/main.yml/badge.svg)](https://github.com/MrFR0D0/foodgram/actions/workflows/main.yml)
 # Проект: Foodgram
-### Выпускной проект *Яндекс.Практикум* курса Python-разработчик(backend)
 
 Проект Foodgram дает возможность пользователям создавать и хранить рецепты на онлайн-платформе. Кроме того, можно скачать список продуктов, необходимых для приготовления блюда, просмотреть рецепты друзей и добавить любимые рецепты в список избранных.
 
@@ -25,6 +24,20 @@
 
     Email: Dima@dima.ru
     Password: 1
+## Запуск проекта на локальном сервере
+1. Копирование проекта
+```bash
+git clone git@github.com:MrFR0D0/foodgram.git
+```
+
+2. Запуск проекта
+Находясь в директории foodgram выполните команду
+```bash
+docker-compose -f docker-compose_local.yml up --build
+```
+
+3. Доступ к проекту по адрусе
+http://localhost:8000/
 
 ## Запуск проекта на удаленном сервере
 
