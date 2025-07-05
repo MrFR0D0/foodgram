@@ -93,20 +93,20 @@ POST http://127.0.0.1:8000/api/auth/token/login/
 Content-Type: application/json
 
 {
-    "email": "Dima3@dima.ru",
-    "password": "Password1234!1"
+    "email": "D@d.ru",
+    "password": "1"
 }
 ###
 
 
 # Записываем полученный для пользователя токен
-# ddbd15117e7cb611f549ee7ae771e8a4cb1efd6a
+# 9647b2c966f223b4d29ac1b9d1a18427c9f920f9
 
 
 # Создаем рецепты
 POST http://127.0.0.1:8000/api/recipes/
 Content-Type: application/json
-Authorization:Token ddbd15117e7cb611f549ee7ae771e8a4cb1efd6a
+Authorization:Token 9647b2c966f223b4d29ac1b9d1a18427c9f920f9
 
 {
   "ingredients": [
@@ -131,7 +131,7 @@ Authorization:Token ddbd15117e7cb611f549ee7ae771e8a4cb1efd6a
 ###
 POST http://127.0.0.1:8000/api/recipes/
 Content-Type: application/json
-Authorization:Token 6f049cc36f4b34ac1873f7023dc573fdf3c51776
+Authorization:Token 9647b2c966f223b4d29ac1b9d1a18427c9f920f9
 
 {
   "ingredients": [
@@ -156,7 +156,7 @@ Authorization:Token 6f049cc36f4b34ac1873f7023dc573fdf3c51776
 ###
 POST http://127.0.0.1:8000/api/recipes/
 Content-Type: application/json
-Authorization:Token 6f049cc36f4b34ac1873f7023dc573fdf3c51776
+Authorization:Token 9647b2c966f223b4d29ac1b9d1a18427c9f920f9
 
 {
   "ingredients": [

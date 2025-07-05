@@ -15,6 +15,9 @@ from rest_framework.permissions import (
     IsAuthenticated,
     IsAuthenticatedOrReadOnly,
 )
+from django.db.models import Exists, OuterRef, Sum, Value, BooleanField 
+from django.http import Http404
+
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
@@ -85,6 +88,11 @@ class RecipesViewSet(viewsets.ModelViewSet):
                     )
                 ),
             )
+        else:
+            queryset = queryset.annotate(
+                is_favorited=Value(False, output_field=BooleanField()),
+                is_in_shopping_cart=Value(False, output_field=BooleanField()),
+            )
         return queryset
 
     def create(self, request, *args, **kwargs):
@@ -107,8 +115,16 @@ class RecipesViewSet(viewsets.ModelViewSet):
         )
 
     def base_post_or_delete(self, request, pk, model, serializer_class):
+        try:
+            recipe = Recipe.objects.get(pk=pk)
+        except Recipe.DoesNotExist:
+            if request.method == "DELETE":
+                return Response(
+                    {"error": "Невозможно удалить несуществующий рецепт"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+            raise Http404()
         if request.method == 'POST':
-            recipe = get_object_or_404(Recipe, pk=pk)
             serializer = serializer_class(
                 data={'user': request.user.id, 'recipe': recipe.id}
             )
@@ -122,7 +138,10 @@ class RecipesViewSet(viewsets.ModelViewSet):
             user=request.user, recipe__id=pk
         ).delete()
         if deleted_count == 0:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Невозможно удалить не добавленный рецепт"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
