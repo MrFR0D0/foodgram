@@ -2,8 +2,8 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from api.serializers.users import CustomUserSerializer
-from foodgram_backend import constants
+from api.v1.users.serializers import CustomUserSerializer
+import constants
 from recipes.models import (
     Favorite,
     Ingredient,
@@ -93,6 +93,8 @@ class RecipeGETSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Recipe при небезопасных запросах."""
+    is_favorited = serializers.BooleanField(read_only=True)
+    is_in_shopping_cart = serializers.BooleanField(read_only=True)
 
     ingredients = RecipeIngredientSerializer(
         many=True,
@@ -117,7 +119,10 @@ class RecipeSerializer(serializers.ModelSerializer):
             'name',
             'text',
             'cooking_time',
-            'author'
+            'author',
+            'is_favorited',
+            'is_in_shopping_cart',
+
         )
 
     def validate_ingredients(self, ingredients):

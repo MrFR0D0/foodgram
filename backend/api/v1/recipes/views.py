@@ -18,10 +18,10 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from api.filters import IngredientFilter, RecipeFilter
-from api.pagination import CustomPagination
-from api.permissions import AuthorOrReadOnly
-from api.serializers.recipes import (
+from api.v1.filters import IngredientFilter, RecipeFilter
+from api.v1.pagination import CustomPagination
+from api.v1.permissions import AuthorOrReadOnly
+from api.v1.recipes.serializers import (
     FavoriteSerializer,
     IngredientSerializer,
     RecipeGETSerializer,
@@ -86,6 +86,25 @@ class RecipesViewSet(viewsets.ModelViewSet):
                 ),
             )
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        # Re-fetch the created instance using the annotated queryset
+        # This ensures is_favorited and is_in_shopping_cart are present
+        created_recipe = self.get_queryset().get(pk=serializer.instance.pk)
+
+        read_serializer = RecipeGETSerializer(
+            created_recipe, # Use the re-fetched instance
+            context={'request': request}
+        )
+        headers = self.get_success_headers(read_serializer.data)
+        return Response(
+            read_serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
 
     def base_post_or_delete(self, request, pk, model, serializer_class):
         if request.method == 'POST':

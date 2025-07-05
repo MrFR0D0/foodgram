@@ -8,8 +8,8 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from api.permissions import AnonimOrAuthenticatedReadOnly
-from api.serializers.users import (
+from api.v1.permissions import AnonimOrAuthenticatedReadOnly
+from api.v1.users.serializers import (
     CustomUserSerializer,
     FollowSerializer,
     FollowShowSerializer,

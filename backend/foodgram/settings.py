@@ -15,7 +15,7 @@ from pathlib import Path
 from django.core.management.utils import get_random_secret_key
 from dotenv import load_dotenv
 
-from foodgram_backend import constants
+import constants
 
 load_dotenv()
 
@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'django_filters',
     'users.apps.UsersConfig',
     'recipes.apps.RecipesConfig',
-    'api.apps.ApiConfig',
+    'api.v1.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -183,9 +183,9 @@ LOGIN_URL = 'login'
 
 DJOSER = {
     'SERIALIZERS': {
-        'user_create': 'api.serializers.users.CustomUserCreateSerializer',
-        'user': 'api.serializers.users.CustomUserSerializer',
-        'current_user': 'api.serializers.users.CustomUserSerializer',
+        'user_create': 'api.v1.users.serializers.CustomUserCreateSerializer',
+        'user': 'api.v1.users.serializers.CustomUserSerializer',
+        'current_user': 'api.v1.users.serializers.CustomUserSerializer',
     },
     'PERMISSIONS': {
         'user': ['rest_framework.permissions.AllowAny'],

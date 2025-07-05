@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 
-from foodgram_backend import constants
+import constants
 
 
 def validate_ingredient_amount(value):

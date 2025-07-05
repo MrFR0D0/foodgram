@@ -19,11 +19,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from api.views.recipes import short_url
+from api.v1.recipes.views import short_url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('api.urls')),
+    path('api/', include('api.v1.urls')),
     path('s/<int:pk>/', short_url, name='short_url'),
 
 ]
@@ -34,8 +34,8 @@ if settings.DEBUG:
         document_root=settings.MEDIA_ROOT
     )
 
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns = [
-        path('__debug__/', include(debug_toolbar.urls))
-    ] + urlpatterns
+# if settings.DEBUG:
+#     import debug_toolbar
+#     urlpatterns = [
+#         path('__debug__/', include(debug_toolbar.urls))
+#     ] + urlpatterns

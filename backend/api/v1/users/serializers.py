@@ -4,7 +4,7 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from foodgram_backend import constants
+import constants
 from recipes.models import Recipe
 from recipes.utils import Base64ImageField
 from users.models import Follow
@@ -50,11 +50,11 @@ class CustomUserSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
         model = User
         fields = (
-            'email',
             'id',
             'username',
             'first_name',
             'last_name',
+            'email',
             'is_subscribed',
             'avatar',
         )
