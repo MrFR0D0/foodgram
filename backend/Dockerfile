@@ -1,8 +1,8 @@
-FROM python:3.9
+FROM python:3.12
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y postgresql-client
+# RUN apt-get update && apt-get install -y postgresql-client netcat-traditional
 
 COPY requirements.txt .
 
@@ -12,4 +12,9 @@ RUN pip install -r /app/requirements.txt --no-cache-dir
 
 COPY . .
 
-CMD ["gunicorn", "--bind", "0:8000", "foodgram_backend.wsgi:application"]
+RUN chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+# CMD ["python", "manage.py", "runserver", "0:8000"]
+CMD ["gunicorn", "--bind", "0:8000", "foodgram.wsgi:application"]

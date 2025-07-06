@@ -1,4 +1,5 @@
-version: '3.3'
+# TODO Добавить подтягивание эндпоинта redoc в финальную сборку
+
 services:
 
   frontend:
