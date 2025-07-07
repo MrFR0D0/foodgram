@@ -24,6 +24,36 @@
 
     Email: Dima@dima.ru
     Password: 1
+
+
+# Локальный запуск контейнера с Django:
+1. Находимся в корнейвой директории проекта foodgram
+2. Билдим образ Django с присвоением имени local_django:
+```bash
+docker build -t local_django ./backend
+```
+3.  Из образа local_django собираем контейнер local_django_container, который сам удалиться после закрытия, будет в интерактивном режиме выводить лог в терминал, подгружает переменные среды их .env файла и пробрасывает 8000 порт хоста на 8000 порт контейнера:
+```bash
+docker run --rm -it --env-file .env --name local_django_container -p 8000:8000 local_django
+```
+
+
+
+
+# Локальный запуск контейнера с Nginx:
+1. Находимся в корнейвой директории проекта foodgram
+2. Билдим образ Nginx с присвоением имени local_nginx и обозначением контекста сборки корневую директорию проекта foodgram:
+```bash
+docker build -t local_nginx -f ./nginx_local/Dockerfile .   
+```
+3.  Из образа local_django собираем контейнер local_django_container, который сам удалиться после закрытия, будет в интерактивном режиме выводить лог в терминал, подгружает переменные среды их .env файла и пробрасывает 8000 порт хоста на 8000 порт контейнера:
+```bash
+docker run --rm -it --env-file .env --name local_django_container -p 8000:8000 local_django
+```
+
+
+
+
 ## Запуск проекта на локальном сервере
 1. Копирование проекта
 ```bash
