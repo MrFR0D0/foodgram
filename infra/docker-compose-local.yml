@@ -22,21 +22,21 @@ services:
       dockerfile: Dockerfile
     restart: always
     volumes:
-      - static:/django_static/
-      - media:/app/media/
+      - static:/django_static
+      - media:/app/media
     depends_on:
       - db
     env_file: ../.env
 
-  # frontend:
-  #   container_name: frontend_React
-  #   build:
-  #     context: ../frontend
-  #     dockerfile: Dockerfile
-  #   command: cp -r /app/build/. /static/
-  #   env_file: ../.env
-  #   volumes:
-  #     - static:/static
+  frontend:
+    container_name: frontend_React
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    command: cp -r /app/build/. /static/
+    env_file: ../.env
+    volumes:
+      - static:/static
 
   gateway:
     container_name: proxy_Nginx
@@ -52,4 +52,4 @@ services:
     restart: always
     depends_on:
       - backend
-      # - frontend
+      - frontend

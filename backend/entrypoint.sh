@@ -18,6 +18,7 @@ echo "Миграция БД завершена."
 echo "Сбор статики Django..."
 python manage.py collectstatic
 echo "Статика Django собрана."
-cp -r /app/collected_static/. /django_static
+cp -r /app/collected_static/. /django_static/static
+python manage.py import_data
 # Запуск основной команды контейнера (переданной через CMD)
 exec "$@"
