@@ -26,16 +26,47 @@
     Password: 1
 
 
-# Локальный запуск контейнера с Django:
+# Локальный запуск контейнеров по отдельности:
 1. Находимся в корнейвой директории проекта foodgram
-2. Билдим образ Django с присвоением имени local_django:
+2. Билдим образ db с присвоением имени db и обозначением контекста сборки свою папку (с Dockerfile):
 ```bash
-docker build -t local_django ./backend
+docker build -t db_img -f ./db/Dockerfile ./db   
 ```
-3.  Из образа local_django собираем контейнер local_django_container, который сам удалиться после закрытия, будет в интерактивном режиме выводить лог в терминал, подгружает переменные среды их .env файла и пробрасывает 8000 порт хоста на 8000 порт контейнера:
+3. Билдим образ Django с присвоением имени backend и обозначением контекста сборки свою папку (с Dockerfile):
 ```bash
-docker run --rm -it --env-file .env --name local_django_container -p 8000:8000 local_django
+docker build -t backend_img -f ./backend/Dockerfile ./backend
 ```
+4. Билдим образ Nginx с присвоением имени gateway и обозначением контекста сборки корневую директорию проекта foodgram (для доступа к Docs):
+```bash
+docker build -t gateway_img -f ./nginx_local/Dockerfile .   
+```
+5. Создаем сеть c названием docker network
+```bash
+docker network create foodgram-network
+```
+6. Из образа db_img собираем контейнер db, который сам удалиться после закрытия, будет в интерактивном режиме выводить лог в терминал, подгружает переменные среды из .env файла и подключается к сети foodgram-network:
+```bash
+docker run --rm -it --env-file .env --network foodgram-network --name db db_img
+```
+7. Из образа backend_img собираем контейнер backend, который сам удалиться после закрытия, будет в интерактивном режиме выводить лог в терминал, подгружает переменные среды из .env файла, подключается к сети foodgram-network и пробрасывает 8000 порт хоста на 8000 порт контейнера:
+```bash
+docker run --rm -it --env-file .env --network foodgram-network --name backend -p 8000:8000 backend_img
+```
+8. Из образа gateway_img собираем контейнер gateway, который сам удалиться после закрытия, будет в интерактивном режиме выводить лог в терминал, подгружает переменные среды из .env файла, подключается к сети foodgram-network и пробрасывает 8001 порт хоста на 80 порт контейнера:
+```bash
+docker run --rm -it --env-file .env --network foodgram-network --name gateway -p 8001:80 gateway_img
+```
+9. Далее в браузере доступ по адресу localhost:8001/api
+
+# Локальный запуск контейнеров оркестром:
+1. Находимся в корнейвой директории проекта foodgram
+2. Запускаем оркестр контйнеров с присвоением имени проекта foodgram
+```bash
+docker-compose -f ./infra/docker-compose-local.yml -p foodgram  up
+```
+
+
+
 
 
 
