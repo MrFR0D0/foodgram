@@ -42,7 +42,7 @@ services:
     container_name: proxy_Nginx
     build:
       context: ../.
-      dockerfile: nginx_local/Dockerfile
+      dockerfile: nginx/Dockerfile
 
     ports:
       - 8000:80

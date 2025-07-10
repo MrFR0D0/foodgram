@@ -5,6 +5,7 @@ volumes:
   static:
   media:
 
+
 services:
   db:
     image: postgres:13.10
@@ -41,4 +42,3 @@ services:
     depends_on:
       - backend
       - frontend
-
