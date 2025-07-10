@@ -20,5 +20,8 @@ python manage.py collectstatic
 echo "Статика Django собрана."
 cp -r /app/collected_static/. /django_static/static
 python manage.py import_data
+python manage.py import_users
+python manage.py create_test_recipes
+python manage.py set_avatars
 # Запуск основной команды контейнера (переданной через CMD)
 exec "$@"
