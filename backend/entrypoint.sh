@@ -31,6 +31,6 @@ echo "\nДобавление аватарок пользователей..."
 python manage.py set_avatars
 
 echo "\nСоздание рецептов..."
-python manage.py create_test_recipes
+python manage.py create_recipes
 # Запуск основной команды контейнера (переданной через CMD)
 exec "$@"
