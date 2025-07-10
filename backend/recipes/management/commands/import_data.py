@@ -24,7 +24,7 @@ class Command(BaseCommand):
                     name=row[0].strip(),
                     measurement_unit=row[1].strip()
                 )
-        self.stdout.write(self.style.SUCCESS('Список ингредиентов загружен!'))
+        self.stdout.write(self.style.SUCCESS('Список ингредиентов загружен.'))
 
         tags_file_path = os.path.join(
             settings.BASE_DIR, 'data', 'tags.csv'
@@ -36,4 +36,4 @@ class Command(BaseCommand):
                     name=row[0].strip(),
                     slug=row[1].strip()
                 )
-        self.stdout.write(self.style.SUCCESS('Список тегов загружен!'))
+        self.stdout.write(self.style.SUCCESS('Список тегов загружен.'))

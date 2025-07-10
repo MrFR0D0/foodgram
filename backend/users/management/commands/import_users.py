@@ -22,7 +22,7 @@ class Command(BaseCommand):
         try:
             with open(users_file_path, encoding='utf-8') as csv_file:
                 csv_reader = reader(csv_file)
-                self.stdout.write("Начинаю загрузку пользователей...")
+                # self.stdout.write("Начинаю загрузку пользователей...")
                 for row in csv_reader:
                     username = row[0].strip()
                     if User.objects.filter(username=username).exists():
@@ -31,6 +31,7 @@ class Command(BaseCommand):
                         # ))
                         continue
 
+                    # Используем только первые 5 столбцов
                     User.objects.create_user(
                         username=username,
                         password=row[1].strip(),
@@ -41,11 +42,11 @@ class Command(BaseCommand):
                     # self.stdout.write(self.style.SUCCESS(
                     #     f"Пользователь '{username}' успешно создан."
                     # ))
-            self.stdout.write(self.style.SUCCESS('\nЗагрузка пользователей завершена!'))
+            self.stdout.write(self.style.SUCCESS('Загрузка пользователей завершена.'))
 
         except FileNotFoundError:
             self.stdout.write(self.style.ERROR(
-                f"Файл не найден: {users_file_path}"
+                f"Файл не найден: {users_file_path}!"
             ))
 
         # --- Добавление суперпользователя (на правильном уровне отступа) ---

@@ -19,18 +19,17 @@ class Command(BaseCommand):
 
         # --- Проверяем, есть ли данные для создания рецептов ---
         if not authors:
-            self.stdout.write(self.style.ERROR('Нет пользователей для создания рецептов. Сначала создайте их.'))
+            self.stdout.write(self.style.ERROR('Нет пользователей для создания рецептов. Сначала создайте их!'))
             return
         if not tags:
-            self.stdout.write(self.style.ERROR('Нет тегов для создания рецептов. Сначала создайте их.'))
+            self.stdout.write(self.style.ERROR('Нет тегов для создания рецептов. Сначала создайте их!'))
             return
         if not ingredients:
-            self.stdout.write(self.style.ERROR('Нет ингредиентов для создания рецептов. Сначала создайте их.'))
+            self.stdout.write(self.style.ERROR('Нет ингредиентов для создания рецептов. Сначала создайте их!'))
             return
 
-        self.stdout.write('Начинаю создание тестовых рецептов...')
-
-        # --- Создаем 5 тестовых рецептов ---
+        created_count = 0
+        # self.stdout.write('Начинаю создание тестовых рецептов...')
         for i in range(100):
             recipe_name = f'Тестовый рецепт №{i + 1}'
             
@@ -38,27 +37,31 @@ class Command(BaseCommand):
             if Recipe.objects.filter(name=recipe_name).exists():
                 # self.stdout.write(self.style.WARNING(f"Рецепт '{recipe_name}' уже существует. Пропускаю."))
                 continue
-
-            # --- Создаем основной объект рецепта ---
-            recipe = Recipe.objects.create(
-                author=random.choice(authors),
-                name=recipe_name,
-                text=f'Это подробное описание для тестового рецепта №{i + 1}. Готовить очень просто!',
-                cooking_time=random.randint(10, 60)
-            )
-
-            # --- Добавляем теги (от 1 до 2 случайных тегов) ---
-            recipe.tags.set(random.sample(tags, k=random.randint(1, 2)))
-
-            # --- Добавляем ингредиенты (от 2 до 5 случайных ингредиентов) ---
-            selected_ingredients = random.sample(ingredients, k=random.randint(2, 10))
-            for ingredient in selected_ingredients:
-                RecipeIngredient.objects.create(
-                    recipe=recipe,
-                    ingredient=ingredient,
-                    amount=random.randint(1, 500)
+            else:
+                created_count += 1
+                # --- Создаем основной объект рецепта ---
+                recipe = Recipe.objects.create(
+                    author=random.choice(authors),
+                    name=recipe_name,
+                    text=f'Это подробное описание для тестового рецепта №{i + 1}. Готовить очень просто!',
+                    cooking_time=random.randint(10, 60)
                 )
-            
-            # self.stdout.write(self.style.SUCCESS(f"Рецепт '{recipe_name}' успешно создан."))
 
-        self.stdout.write(self.style.SUCCESS('\nСоздание тестовых рецептов завершено!'))
+                # --- Добавляем теги (от 1 до 2 случайных тегов) ---
+                recipe.tags.set(random.sample(tags, k=random.randint(1, 2)))
+
+                # --- Добавляем ингредиенты (от 2 до 5 случайных ингредиентов) ---
+                selected_ingredients = random.sample(ingredients, k=random.randint(2, 10))
+                for ingredient in selected_ingredients:
+                    RecipeIngredient.objects.create(
+                        recipe=recipe,
+                        ingredient=ingredient,
+                        amount=random.randint(1, 500)
+                    )
+                
+                # self.stdout.write(self.style.SUCCESS(f"Рецепт '{recipe_name}' успешно создан."))
+        
+        if created_count == 0:
+            self.stdout.write(self.style.WARNING('Все рецепты уже были добавлены ранее.'))
+        else:
+            self.stdout.write(self.style.SUCCESS('Создание тестовых рецептов завершено.\n'))

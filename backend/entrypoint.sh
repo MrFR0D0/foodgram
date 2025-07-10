@@ -11,17 +11,26 @@
 # echo "Database started."
 
 # Применение миграций Django
-echo "Применение миграций БД..."
+echo "\nПрименение миграций БД...\n"
 python manage.py makemigrations
 python manage.py migrate
-echo "Миграция БД завершена."
-echo "Сбор статики Django..."
+echo "\nМиграция БД завершена."
+
+echo "\nСбор статики Django..."
 python manage.py collectstatic
-echo "Статика Django собрана."
 cp -r /app/collected_static/. /django_static/static
+echo "Статика Django собрана."
+
+echo "\nЗагрузка тегов и ингридиентов..."
 python manage.py import_data
+
+echo "\nЗагрузка пользователей..."
 python manage.py import_users
-python manage.py create_test_recipes
+
+echo "\nДобавление аватарок пользователей..."
 python manage.py set_avatars
+
+echo "\nСоздание рецептов..."
+python manage.py create_test_recipes
 # Запуск основной команды контейнера (переданной через CMD)
 exec "$@"
