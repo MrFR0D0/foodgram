@@ -136,10 +136,10 @@ class Api {
     const token = localStorage.getItem("token");
     const authorization = token ? { authorization: `Token ${token}` } : {};
     const tagsString = tags
-      ? tags
+      ? `&tags=${tags
           .filter((tag) => tag.value)
-          .map((tag) => `&tags=${tag.slug}`)
-          .join("")
+          .map((tag) => tag.slug)
+          .join(",")}`
       : "";
     return fetch(
       `/api/recipes/?page=${page}&limit=${limit}${

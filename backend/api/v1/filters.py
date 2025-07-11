@@ -14,9 +14,13 @@ class IngredientFilter(django_filters.FilterSet):
         fields = ['name']
 
 
+class MultipleValueFilter(django_filters.BaseInFilter, django_filters.CharFilter):
+    pass
+
 class RecipeFilter(django_filters.FilterSet):
-    tags = django_filters.AllValuesMultipleFilter(
-        field_name='tags__slug'
+    tags = MultipleValueFilter(
+        field_name='tags__slug',
+        lookup_expr='in'
     )
     is_favorited = django_filters.NumberFilter(
         method='get_is_favorited'
