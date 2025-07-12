@@ -118,7 +118,7 @@ DB_PORT=5432
 Эта команда соберет все необходимые образы и запустит контейнеры для бэкенда, фронтенда, базы данных и веб-сервера.
 
 ```bash
-docker-compose -f ./infra/docker-compose.yml up --build
+docker-compose -f ./infra/docker-compose.yml -p foodgram up --build  
 ```
 
 После успешного запуска проект будет доступен по адресу [http://localhost:8000/](http://localhost:8000/).

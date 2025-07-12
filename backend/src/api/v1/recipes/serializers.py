@@ -2,8 +2,8 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from api.v1.users.serializers import CustomUserSerializer
 import constants
+from api.v1.users.serializers import CustomUserSerializer
 from recipes.models import (
     Favorite,
     Ingredient,
@@ -88,7 +88,7 @@ class RecipeGETSerializer(serializers.ModelSerializer):
             'cooking_time'
         )
 
-    
+
 
 
 class RecipeSerializer(serializers.ModelSerializer):

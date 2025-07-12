@@ -15,7 +15,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Загрузка ingredients.csv и tags.csv в БД."""
         ingredients_file_path = os.path.join(
-            settings.BASE_DIR, 'data', 'ingredients.csv'
+            settings.BASE_DIR, '..', 'data', 'ingredients.csv'
         )
         with open(ingredients_file_path, encoding='utf-8') as csv_file:
             csv_reader = reader(csv_file)
@@ -27,7 +27,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Список ингредиентов загружен.'))
 
         tags_file_path = os.path.join(
-            settings.BASE_DIR, 'data', 'tags.csv'
+            settings.BASE_DIR, '..', 'data', 'tags.csv'
         )
         with open(tags_file_path, encoding='utf-8') as csv_file:
             csv_reader = reader(csv_file)

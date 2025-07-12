@@ -16,7 +16,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Обрабатывает логику загрузки пользователей и создания админа."""
         users_file_path = os.path.join(
-            settings.BASE_DIR, 'data', 'users.csv'
+            settings.BASE_DIR, '..', 'data', 'users.csv'
         )
 
         try:

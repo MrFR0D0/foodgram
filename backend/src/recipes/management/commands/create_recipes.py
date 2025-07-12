@@ -18,7 +18,7 @@ class Command(BaseCommand):
     help = 'Загрузка рецептов из файла backend/data/recipes.csv'
 
     def handle(self, *args, **options):
-        recipes_csv_path = os.path.join(settings.BASE_DIR, 'data', 'recipes.csv')
+        recipes_csv_path = os.path.join(settings.BASE_DIR, '..', 'data', 'recipes.csv')
 
         # --- Проверка наличия необходимых данных ---
         authors = list(User.objects.filter(is_staff=False))
@@ -64,7 +64,7 @@ class Command(BaseCommand):
                         # --- Прикрепляем изображение ---
                         image_filename = row.get('image', '').strip()
                         if image_filename:
-                            image_path = os.path.join(settings.BASE_DIR, 'data', 'dishes', image_filename)
+                            image_path = os.path.join(settings.BASE_DIR, '..', 'data', 'dishes', image_filename)
                             if os.path.exists(image_path):
                                 with open(image_path, 'rb') as img_file:
                                     recipe.image.save(image_filename, File(img_file), save=True)

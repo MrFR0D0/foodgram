@@ -17,7 +17,7 @@ class Command(BaseCommand):
         """Читает users.csv и возвращает словарь {username: gender}."""
         import csv # <-- ИМПОРТ ПЕРЕМЕЩЕН
         gender_map = {}
-        users_file_path = os.path.join(settings.BASE_DIR, 'data', 'users.csv')
+        users_file_path = os.path.join(settings.BASE_DIR, '..', 'data', 'users.csv')
         try:
             with open(users_file_path, encoding='utf-8') as csv_file:
                 csv_reader = csv.reader(csv_file)
