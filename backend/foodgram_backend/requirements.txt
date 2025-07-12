@@ -6,7 +6,7 @@ chardet==5.2.0
 charset-normalizer==3.4.1
 cryptography==44.0.0
 defusedxml==0.8.0rc2
-Django==4.2.18
+Django==4.2.22
 django-debug-toolbar==5.0.1
 django-extensions==3.2.3
 django-filter==24.3
