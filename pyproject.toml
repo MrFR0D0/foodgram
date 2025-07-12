@@ -15,6 +15,9 @@ respect-gitignore = false
 # "true" - Показывать в терминале изменения, которые были исправлены флагом --fix
 show-fixes = true
 
+src = ["backend/src"]
+include = ["backend/**/*.py"]
+extend-exclude = ["settings.py", "*/migrations/", "data/"]
 
 
 [tool.ruff.lint]
@@ -87,9 +90,6 @@ relative-imports-order = "closest-to-furthest"
 # ошибку, если длина строки позволяет сделать импорт в одну строку (необходимо совместное
 # использование с skip-magic-trailing-comma = true)
 split-on-trailing-comma = false
-
-# Указываем приложения, которые являются нашими, а не сторонними
-src = ["backend/src"]
 
 
 [tool.ruff.format]
