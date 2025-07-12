@@ -1,5 +1,3 @@
-version: '3.3'
-
 volumes:
   postgres_data:
   static:
@@ -8,35 +6,48 @@ volumes:
 
 services:
   db:
-    image: postgres:13.10
-    env_file: .env
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-
-  backend:
-    image: dimanikolaev/foodgram_backend:latest
+    container_name: db_PostgreSQL
+    build:
+      context: ../db
+      dockerfile: Dockerfile
     restart: always
     volumes:
-      - static:/collected_static/
-      - media:/app/media/
+      - postgres_data:/var/lib/postgresql/data/
+    env_file: ../.env
+
+  backend:
+    container_name: backend_Django
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - static:/django_static
+      - media:/app/media
     depends_on:
       - db
-    env_file: .env
+    env_file: ../.env
 
   frontend:
-    image: dimanikolaev/foodgram_frontend:latest
-    env_file: .env
+    container_name: frontend_React
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
     command: cp -r /app/build/. /static/
+    env_file: ../.env
     volumes:
       - static:/static
 
   gateway:
-    image: dimanikolaev/foodgram_gateway:latest
-    container_name: foodgram-proxy
+    container_name: proxy_Nginx
+    build:
+      context: ../.
+      dockerfile: nginx/Dockerfile
+
     ports:
       - 8000:80
     volumes:
-      - static:/static
+      - static:/staticfiles
       - media:/media
     restart: always
     depends_on:
