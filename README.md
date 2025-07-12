@@ -29,6 +29,60 @@
 
 ---
 
+## 🏛️ Архитектура проекта
+
+```mermaid
+graph TD
+    user["User<br>External Actor"]
+
+    subgraph proxy ["Reverse Proxy<br>Nginx"]
+        nginx_config["Nginx Configuration<br>Nginx"]
+    end
+
+    subgraph frontend ["Frontend Application<br>React.js"]
+        main_app["Main Application<br>React.js"]
+        api_client["API Client<br>JavaScript"]
+        ui_components["UI Components<br>React.js"]
+        app_pages["Application Pages<br>React.js"]
+        context_providers["Context Providers<br>React.js"]
+        frontend_utils["Frontend Utilities<br>JavaScript"]
+
+        main_app -->|sends API requests via| api_client
+        main_app -->|uses| ui_components
+        main_app -->|navigates to| app_pages
+        main_app -->|provides context via| context_providers
+        main_app -->|utilizes| frontend_utils
+    end
+
+    subgraph backend ["Backend API<br>Django, Python"]
+        django_core["Django Core<br>Python"]
+        api_views["API Views<br>Django REST Framework"]
+        api_serializers["API Serializers<br>Django REST Framework"]
+        db_models["Database Models<br>Django ORM"]
+        data_commands["Data Management Commands<br>Django"]
+        api_utils["API Utilities<br>Python"]
+
+        django_core -->|defines routes for| api_views
+        api_views -->|serializes/deserializes data with| api_serializers
+        api_views -->|queries/updates| db_models
+        api_views -->|applies logic from| api_utils
+        data_commands -->|modifies| db_models
+    end
+
+    subgraph db ["Database<br>PostgreSQL"]
+        postgres["PostgreSQL Database<br>SQL"]
+    end
+
+    user -->|accesses| proxy
+    proxy -->|serves| frontend
+    proxy -->|proxies API to| backend
+    frontend -->|makes API calls to| backend
+    backend -->|reads/writes data from| db
+    db -->|stores data for| backend
+```
+
+---
+
 ## ⚙️ Локальная разработка
 
 Эти шаги помогут вам запустить проект на вашем локальном компьютере для разработки и тестирования.
