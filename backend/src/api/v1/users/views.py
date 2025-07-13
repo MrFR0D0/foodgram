@@ -1,12 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Count
 from django.http import Http404
+from rest_framework.response import Response
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
 
 from api.v1.permissions import AnonimOrAuthenticatedReadOnly
 from api.v1.users.serializers import (
