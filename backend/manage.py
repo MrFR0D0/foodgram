@@ -1,7 +1,7 @@
 """Django's command-line utility for administrative tasks."""
-import sys
 
 import os
+import sys
 
 
 def main():
