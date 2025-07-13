@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Count
-from django.shortcuts import get_object_or_404
 from django.http import Http404
 from djoser.views import UserViewSet
 from rest_framework import status
@@ -22,6 +21,8 @@ User = get_user_model()
 
 
 class CustomUserViewSet(UserViewSet):
+    """Вьюсет для пользователей."""
+
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = (AnonimOrAuthenticatedReadOnly,)
@@ -49,7 +50,9 @@ class CustomUserViewSet(UserViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        serializer = CustomUserSerializer(request.user, context={"request": request})
+        serializer = CustomUserSerializer(
+            request.user, context={"request": request}
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(
@@ -66,18 +69,25 @@ class CustomUserViewSet(UserViewSet):
         автора контента, чей профиль он просматривает.
         """
         try:
-            author = User.objects.annotate(recipes_count=Count("recipes")).get(id=id)
+            author = User.objects.annotate(recipes_count=Count("recipes")).get(
+                id=id
+            )
         except User.DoesNotExist:
             # Если автор не найден:
             if request.method == "DELETE":
                 # Для DELETE запроса возвращаем кастомную ошибку
                 return Response(
-                    {"error": "Невозможно удалить подписку на несуществующего автора."},
+                    {
+                        "error": "Невозможно удалить подписку \
+                            на несуществующего автора."
+                    },
                     status=status.HTTP_404_NOT_FOUND,
                 )
-            # Для других методов (например, POST), повторно выбрасываем Http404.
-            # DRF перехватит его и вернет стандартное сообщение "No User matches the given query."
-            raise Http404()
+            # Для других методов (например, POST),
+            # повторно выбрасываем Http404.
+            # DRF перехватит его и вернет стандартное сообщение
+            # "No User matches the given query."
+            raise Http404() from None
 
         if request.method == "POST":
             serializer = FollowSerializer(
@@ -88,7 +98,9 @@ class CustomUserViewSet(UserViewSet):
             author_serializer = FollowShowSerializer(
                 author, context={"request": request}
             )
-            return Response(author_serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                author_serializer.data, status=status.HTTP_201_CREATED
+            )
         deleted_count, _ = Follow.objects.filter(
             user=request.user, author__id=id
         ).delete()
@@ -116,13 +128,16 @@ class CustomUserViewSet(UserViewSet):
             recipes_count=Count("recipes")
         )
         paginator = LimitOffsetPagination()
-        result_pages = paginator.paginate_queryset(queryset=authors, request=request)
+        result_pages = paginator.paginate_queryset(
+            queryset=authors, request=request
+        )
         serializer = FollowShowSerializer(
             result_pages, context={"request": request}, many=True
         )
         return paginator.get_paginated_response(serializer.data)
 
     def get_serializer_class(self):
+        """Определение сериализатора."""
         if self.action == "update_avatar":
             return UserAvatarSerializer
         return super().get_serializer_class()
@@ -134,9 +149,12 @@ class CustomUserViewSet(UserViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def update_avatar(self, request, *args, **kwargs):
+        """Обновление аватара."""
         user = self.request.user
         if request.method == "PUT":
-            serializer = self.get_serializer(user, data=request.data, partial=False)
+            serializer = self.get_serializer(
+                user, data=request.data, partial=False
+            )
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -145,6 +163,7 @@ class CustomUserViewSet(UserViewSet):
 
     @action(detail=True, methods=["get"], permission_classes=[AllowAny])
     def profile(self, request, pk=None):
+        """Получение профиля пользоватеоя."""
         user = self.get_object()
         serializer = CustomUserSerializer(user)
         return Response(serializer.data)

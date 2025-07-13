@@ -9,6 +9,7 @@ class AnonimOrAuthenticatedReadOnly(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
+        """Переопределение логики доступа."""
         if request.method in permissions.SAFE_METHODS:
             if request.user.is_anonymous or request.user.is_authenticated:
                 return True
@@ -24,6 +25,7 @@ class AuthorOrReadOnly(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, object):
+        """Переопределение логики доступа."""
         return (
             request.method in permissions.SAFE_METHODS
             or object.author == request.user

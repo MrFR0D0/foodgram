@@ -18,26 +18,27 @@ class CustomUserCreateSerializer(UserCreateSerializer):
     class Meta:
         model = User
         fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'password',
+            "email",
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "password",
         )
         extra_kwargs = {
-            'password': {'write_only': True},
-            'username': {'max_length': constants.MAX_USERNAME_LENGHT}
+            "password": {"write_only": True},
+            "username": {"max_length": constants.MAX_USERNAME_LENGHT},
         }
 
     def validate_username(self, value):
+        """Проверка корректности мени пользователя."""
         validator = RegexValidator(
             regex=constants.USERNAME_CHECK,
-            message='Имя пользователя содержит недопустимый символ'
+            message="Имя пользователя содержит недопустимый символ",
         )
         validator(value)
         if value == constants.NOT_ALLOWED_USERNAME:
-            raise serializers.ValidationError('недопустимое имя')
+            raise serializers.ValidationError("недопустимое имя")
         return value
 
 
@@ -50,18 +51,18 @@ class CustomUserSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
         model = User
         fields = (
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'email',
-            'is_subscribed',
-            'avatar',
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "is_subscribed",
+            "avatar",
         )
 
     def get_is_subscribed(self, object):
         """Проверяет, подписан ли текущий пользователь на автора аккаунта."""
-        request = self.context.get('request')
+        request = self.context.get("request")
         if request is None or request.user.is_anonymous:
             return False
         return object.follower.filter(user=request.user).exists()
@@ -70,15 +71,11 @@ class CustomUserSerializer(UserSerializer):
 class UserAvatarSerializer(UserSerializer):
     """Сериализатор для модели User."""
 
-    avatar = Base64ImageField(
-        required=True,
-    )
+    avatar = Base64ImageField(required=True)
 
     class Meta(UserSerializer.Meta):
         model = User
-        fields = (
-            'avatar',
-        )
+        fields = ("avatar",)
 
 
 class FollowSerializer(serializers.ModelSerializer):
@@ -86,20 +83,20 @@ class FollowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Follow
-        fields = ('user', 'author')
+        fields = ("user", "author")
         validators = [
             UniqueTogetherValidator(
                 queryset=Follow.objects.all(),
-                fields=('author', 'user'),
-                message='Вы уже подписывались на этого автора'
+                fields=("author", "user"),
+                message="Вы уже подписывались на этого автора",
             )
         ]
 
     def validate(self, data):
         """Проверяем, что пользователь не подписывается на самого себя."""
-        if data['user'] == data['author']:
+        if data["user"] == data["author"]:
             raise serializers.ValidationError(
-                'Подписка на cамого себя не имеет смысла'
+                "Подписка на cамого себя не имеет смысла"
             )
         return data
 
@@ -109,12 +106,7 @@ class FollowRecipeShortSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = (
-            'id',
-            'name',
-            'image',
-            'cooking_time'
-        )
+        fields = ("id", "name", "image", "cooking_time")
 
 
 class FollowShowSerializer(CustomUserSerializer):
@@ -126,21 +118,22 @@ class FollowShowSerializer(CustomUserSerializer):
     class Meta:
         model = User
         fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed',
-            'recipes',
-            'recipes_count',
-            'avatar'
+            "email",
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "is_subscribed",
+            "recipes",
+            "recipes_count",
+            "avatar",
         )
 
     def get_recipes(self, object):
-        recipes_limit = self.context[
-            'request'
-        ].query_params.get('recipes_limit')
+        """Получение рецепта."""
+        recipes_limit = self.context["request"].query_params.get(
+            "recipes_limit"
+        )
         author_recipes = object.recipes.all()
         if recipes_limit and recipes_limit.isnumeric():
             recipes_limit = int(recipes_limit)

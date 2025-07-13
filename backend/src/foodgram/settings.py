@@ -53,9 +53,8 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                # TODO debug и request здесь изначально не было, если будут проблемы - раскоммить их 
-                # 'django.template.context_processors.debug',
-                # 'django.template.context_processors.request',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -66,14 +65,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# TODO разберись как запускать PostgreSQL без сервера через py-pglite и раскоммить
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
