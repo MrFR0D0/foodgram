@@ -1,5 +1,3 @@
-version: '3.3'
-
 volumes:
   postgres_data:
   static:
@@ -8,35 +6,45 @@ volumes:
 
 services:
   db:
-    image: postgres:13.10
-    env_file: .env
+    container_name: db_PostgreSQL
+    image: postgres:14.18
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    env_file: ../.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"] 
+      interval: 5s
+      timeout: 5s 
+      retries: 30 
 
   backend:
+    container_name: backend_Django
     image: dimanikolaev/foodgram_backend:latest
     restart: always
     volumes:
-      - static:/collected_static/
-      - media:/app/media/
+      - static:/django_static
+      - media:/app/media
     depends_on:
-      - db
-    env_file: .env
+      db:
+        condition: service_healthy
+    env_file: ../.env
 
   frontend:
+    container_name: frontend_React
     image: dimanikolaev/foodgram_frontend:latest
-    env_file: .env
     command: cp -r /app/build/. /static/
+    env_file: ../.env
     volumes:
       - static:/static
 
   gateway:
+    container_name: proxy_Nginx
     image: dimanikolaev/foodgram_gateway:latest
-    container_name: foodgram-proxy
     ports:
       - 8000:80
     volumes:
-      - static:/static
+      - static:/staticfiles
       - media:/media
     restart: always
     depends_on:

@@ -7,9 +7,7 @@ volumes:
 services:
   db:
     container_name: db_PostgreSQL
-    build:
-      context: ../db
-      dockerfile: Dockerfile
+    image: postgres:14.18
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
@@ -49,7 +47,6 @@ services:
     build:
       context: ../.
       dockerfile: nginx/Dockerfile
-
     ports:
       - 8000:80
     volumes:
