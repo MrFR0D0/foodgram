@@ -1,0 +1,108 @@
+# Представленное описание показывает, как Ruff будет себя вести с приведенным значением
+[tool.ruff]
+
+
+# Допустимая длинна строки
+line-length = 79
+
+# Требуемая версия Ruff для выполнения проверки
+required-version = ">=0.11"
+
+
+# "false" - выполнять линтинг файлов, которые находятся в .gitignore
+respect-gitignore = false
+
+# "true" - Показывать в терминале изменения, которые были исправлены флагом --fix
+show-fixes = true
+
+src = ["backend/src"]
+include = ["backend/**/*.py"]
+extend-exclude = ["settings.py", "*/migrations/", "data/"]
+
+
+[tool.ruff.lint]
+
+# Основные правила для линтинга
+select = [
+  "E",      # pycodestyle ошибки
+  "F",      # pyflakes ошибки
+  "B",      # flake8-bugbear
+  "C",      # flake8-comprehensions
+  "ANN",    # flake8-annotations (аннотации типов)
+  "D",      # pydocstyle (докстринги)
+  "I",      # isort (импорты)
+  "TID",    # flake8-tidy-imports (организация импортов)
+  "TC",     # flake8-type-checking
+  "N",      # pep8-naming
+  "C90",    # mccabe (сложность)
+  "S",      # bandit уязвимости безопасности
+  "W",      # pycodestyle предупреждения
+]
+
+
+
+# Дополнительные правила для линтинга
+extend-select = ["F401"]
+
+ignore = [
+  "D100",
+  "D105",
+  "D106",
+  "ANN",
+  "D107",
+  "D104",
+  "C901",
+]
+
+
+[tool.ruff.lint.flake8-comprehensions]
+# "true" - разрешает использование словаря через dict() или через литерал
+allow-dict-calls-with-keyword-arguments = true
+
+
+[tool.ruff.lint.pycodestyle]
+
+# "true" - Игнорировать длинну строки для комментариев с тэгами (TODO, FIXME, XXX)
+ignore-overlong-task-comments = true
+
+
+
+[tool.ruff.lint.flake8-annotations]
+# "false" - Линтер будет показывать как ошибку, если указать аннотацию типа для *args или **kwargs как ": Any"
+allow-star-arg-any = true
+
+# "true" = Ruff не требует аннотации "-> None" для конструктора класса __init__, если есть хотя бы одна аннотация.
+# (такое поведение принято в mypy)
+mypy-init-return = true
+
+
+
+[tool.ruff.lint.flake8-bandit]
+# "true" - будет указывать на ошибку, если в блоке try-except обработка except будет молча (например pass).
+# Что бы исклчить вредную привычку подавлять ошибки молча
+check-typed-exception = true
+
+
+
+[tool.ruff.lint.isort]
+# "closest-to-furthest" - При сортировке относительных импортов: сначала ближние потом дальние
+relative-imports-order = "closest-to-furthest"
+
+# "false" - Ни смотря на наличие запятой в конце многострочного импорта, Ruff подсветит
+# ошибку, если длина строки позволяет сделать импорт в одну строку (необходимо совместное
+# использование с skip-magic-trailing-comma = true)
+split-on-trailing-comma = false
+
+
+[tool.ruff.format]
+# Будут использоваться кавычки при форматировании
+quote-style = "double"
+
+# "true" - Во время форматирования разрешает убирать конечные запятые, что бы сделать 
+# код компактнее по высоте и обеспечивая заданную длинну строки
+skip-magic-trailing-comma = true
+
+
+[tool.ruff.lint.pydocstyle]
+# Use Google-style docstrings.
+convention = "google"

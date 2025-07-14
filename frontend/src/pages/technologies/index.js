@@ -19,16 +19,31 @@ const Technologies = () => {
           <div className={styles.text}>
             <ul className={styles.textItem}>
               <li className={styles.textItem}>
-                Python
+                <b>Python:</b> основной язык для бэкенда.
               </li>
               <li className={styles.textItem}>
-                Django
+                <b>Django:</b> веб-фреймворк для разработки серверной части.
               </li>
               <li className={styles.textItem}>
-                Django REST Framework
+                <b>Django REST Framework:</b> для создания гибкого и мощного API.
               </li>
               <li className={styles.textItem}>
-                Djoser
+                <b>PostgreSQL:</b> в качестве основной реляционной базы данных.
+              </li>
+              <li className={styles.textItem}>
+                <b>React:</b> для построения динамического и отзывчивого пользовательского интерфейса.
+              </li>
+              <li className={styles.textItem}>
+                <b>Docker и Docker Compose:</b> для контейнеризации и оркестрации всего приложения.
+              </li>
+              <li className={styles.textItem}>
+                <b>Nginx:</b> в качестве веб-сервера и обратного прокси для раздачи статики и перенаправления запросов.
+              </li>
+              <li className={styles.textItem}>
+                <b>Gunicorn:</b> как WSGI-сервер для запуска Django-приложения в продакшене.
+              </li>
+              <li className={styles.textItem}>
+                <b>GitHub Actions:</b> для автоматизации процессов CI/CD (непрерывной интеграции и доставки).
               </li>
             </ul>
           </div>

@@ -1,0 +1,10 @@
+venv
+.git
+db.sqlite3
+db.sqlite3-journal
+.env
+.vscode
+.idea
+media
+**/__pycache__/
+.DS_Store
