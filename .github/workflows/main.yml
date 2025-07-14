@@ -26,7 +26,7 @@ jobs:
     name: Push Docker image to DockerHub
     runs-on: ubuntu-latest
     needs: tests
-    if: github.ref == 'refs/heads/Project_refactoring'
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -51,7 +51,7 @@ jobs:
     name: Push Docker image to DockerHub
     runs-on: ubuntu-latest
     needs: tests
-    if: github.ref == 'refs/heads/Project_refactoring'
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -76,7 +76,7 @@ jobs:
     name: Push Docker image to DockerHub
     runs-on: ubuntu-latest
     needs: tests
-    if: github.ref == 'refs/heads/Project_refactoring'
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -104,7 +104,7 @@ jobs:
       - build_and_push_backend_to_docker_hub
       - build_and_push_frontend_to_docker_hub
       - build_and_push_gateway_to_docker_hub
-    if: github.ref == 'refs/heads/Project_refactoring'
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
