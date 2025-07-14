@@ -42,7 +42,6 @@ jobs:
       - name: Push backend to DockerHub
         uses: docker/build-push-action@v4
         with:
-          context: ./backend/foodgram_backend
           context: ./backend/
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
@@ -94,7 +93,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: 
-      - build_and_push_backend_frontend_gateway_to_docker_hub
       - build_and_push_backend_to_docker_hub
       - build_and_push_frontend_to_docker_hub
       - build_and_push_gateway_to_docker_hub
