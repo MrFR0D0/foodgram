@@ -1,382 +1,143 @@
+import data from '../data.json';
+
 class Api {
-  constructor(url, headers) {
-    this._url = url;
-    this._headers = headers;
+  constructor() {
+    this._data = data;
+    this._usersById = this._data.users.reduce((acc, user) => {
+      acc[user.id] = user;
+      return acc;
+    }, {});
+    this._tagsById = this._data.tags.reduce((acc, tag) => {
+      acc[tag.id] = tag;
+      return acc;
+    }, {});
   }
 
-  checkResponse(res) {
-    return new Promise((resolve, reject) => {
-      if (res.status === 204) {
-        return resolve(res);
-      }
-      const func = res.status < 400 ? resolve : reject;
-      res.json().then((data) => func(data));
+  // Helper to simulate network delay
+  simulateDelay(data) {
+    return new Promise(resolve => {
+      setTimeout(() => resolve(data), 200); // 200ms delay
     });
   }
 
-  checkFileDownloadResponse(res) {
-    return new Promise((resolve, reject) => {
-      if (res.status < 400) {
-        return res.blob().then((blob) => {
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = "shopping-list";
-          document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
-          a.click();
-          a.remove(); //afterwards we remove the element again
-        });
-      }
-      reject();
-    });
+  // Helper to enrich recipe data
+  enrichRecipe(recipe) {
+    return {
+      ...recipe,
+      author: this._usersById[recipe.author] || null,
+      tags: recipe.tags.map(tagId => this._tagsById[tagId]).filter(Boolean),
+    };
   }
 
+  // Mocked authentication methods
   signin({ email, password }) {
-    return fetch("/api/auth/token/login/", {
-      method: "POST",
-      headers: this._headers,
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    }).then(this.checkResponse);
+    console.log('signin called, but is disabled in static mode.');
+    return Promise.reject({ error: 'Authentication is disabled.' });
   }
 
   signout() {
-    const token = localStorage.getItem("token");
-    return fetch("/api/auth/token/logout/", {
-      method: "POST",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-    }).then(this.checkResponse);
+    console.log('signout called, but is disabled in static mode.');
+    return Promise.resolve();
   }
 
   signup({ email, password, username, first_name, last_name }) {
-    return fetch(`/api/users/`, {
-      method: "POST",
-      headers: this._headers,
-      body: JSON.stringify({
-        email,
-        password,
-        username,
-        first_name,
-        last_name,
-      }),
-    }).then(this.checkResponse);
+    console.log('signup called, but is disabled in static mode.');
+    return Promise.reject({ error: 'Registration is disabled.' });
   }
 
   getUserData() {
-    const token = localStorage.getItem("token");
-    return fetch(`/api/users/me/`, {
-      method: "GET",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-    }).then(this.checkResponse);
+    console.log('getUserData called, but is disabled in static mode.');
+    return Promise.resolve(null);
   }
 
   changePassword({ current_password, new_password }) {
-    const token = localStorage.getItem("token");
-    return fetch(`/api/users/set_password/`, {
-      method: "POST",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-      body: JSON.stringify({ current_password, new_password }),
-    }).then(this.checkResponse);
+    console.log('changePassword called, but is disabled in static mode.');
+    return Promise.reject({ error: 'Password change is disabled.' });
   }
 
-  changeAvatar({ file }) {
-    const token = localStorage.getItem("token");
-    return fetch(`/api/users/me/avatar/`, {
-      method: "PUT",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-      body: JSON.stringify({ avatar: file }),
-    }).then(this.checkResponse);
-  }
-
-  deleteAvatar() {
-    const token = localStorage.getItem("token");
-    return fetch(`/api/users/me/avatar/`, {
-      method: "DELETE",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-    }).then(this.checkResponse);
-  }
-
-  resetPassword({ email }) {
-    return fetch(`/api/users/reset_password/`, {
-      method: "POST",
-      headers: {
-        ...this._headers,
-      },
-      body: JSON.stringify({ email }),
-    }).then(this.checkResponse);
-  }
-
-  // recipes
-
+  // Recipes
   getRecipes({
     page = 1,
     limit = 6,
-    is_favorited = 0,
-    is_in_shopping_cart = 0,
     author,
     tags,
   } = {}) {
-    const token = localStorage.getItem("token");
-    const authorization = token ? { authorization: `Token ${token}` } : {};
-    const tagsString = tags
-      ? `&tags=${tags
-          .filter((tag) => tag.value)
-          .map((tag) => tag.slug)
-          .join(",")}`
-      : "";
-    return fetch(
-      `/api/recipes/?page=${page}&limit=${limit}${
-        author ? `&author=${author}` : ""
-      }${is_favorited ? `&is_favorited=${is_favorited}` : ""}${
-        is_in_shopping_cart ? `&is_in_shopping_cart=${is_in_shopping_cart}` : ""
-      }${tagsString}`,
-      {
-        method: "GET",
-        headers: {
-          ...this._headers,
-          ...authorization,
-        },
-      }
-    ).then(this.checkResponse);
+    let recipes = [...this._data.recipes];
+
+    if (author) {
+      recipes = recipes.filter(recipe => recipe.author === Number(author));
+    }
+
+    if (tags && tags.length > 0) {
+        const selectedTags = tags.filter(t => t.value).map(t => t.slug);
+        if (selectedTags.length > 0) {
+            const tagIds = this._data.tags
+                .filter(tag => selectedTags.includes(tag.slug))
+                .map(tag => tag.id);
+            recipes = recipes.filter(recipe => 
+                recipe.tags.some(tagId => tagIds.includes(tagId))
+            );
+        }
+    }
+
+    const enrichedRecipes = recipes.map(this.enrichRecipe.bind(this));
+
+    // Pagination
+    const startIndex = (page - 1) * limit;
+    const paginatedRecipes = enrichedRecipes.slice(startIndex, startIndex + limit);
+
+    return this.simulateDelay({
+      count: enrichedRecipes.length,
+      results: paginatedRecipes,
+    });
   }
 
   getRecipe({ recipe_id }) {
-    const token = localStorage.getItem("token");
-    const authorization = token ? { authorization: `Token ${token}` } : {};
-    return fetch(`/api/recipes/${recipe_id}/`, {
-      method: "GET",
-      headers: {
-        ...this._headers,
-        ...authorization,
-      },
-    }).then(this.checkResponse);
+    const recipe = this._data.recipes.find(r => r.id === Number(recipe_id));
+    if (recipe) {
+      return this.simulateDelay(this.enrichRecipe(recipe));
+    } else {
+      return Promise.reject({ error: 'Recipe not found.' });
+    }
   }
 
-  createRecipe({
-    name = "",
-    image,
-    tags = [],
-    cooking_time = 0,
-    text = "",
-    ingredients = [],
-  }) {
-    const token = localStorage.getItem("token");
-    return fetch("/api/recipes/", {
-      method: "POST",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-      body: JSON.stringify({
-        name,
-        image,
-        tags,
-        cooking_time,
-        text,
-        ingredients,
-      }),
-    }).then(this.checkResponse);
-  }
-
-  updateRecipe(
-    { name, recipe_id, image, tags, cooking_time, text, ingredients },
-    wasImageUpdated
-  ) {
-    // image was changed
-    const token = localStorage.getItem("token");
-    return fetch(`/api/recipes/${recipe_id}/`, {
-      method: "PATCH",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-      body: JSON.stringify({
-        name,
-        id: recipe_id,
-        image: wasImageUpdated ? image : undefined,
-        tags,
-        cooking_time: Number(cooking_time),
-        text,
-        ingredients,
-      }),
-    }).then(this.checkResponse);
-  }
-
-  addToFavorites({ id }) {
-    const token = localStorage.getItem("token");
-    return fetch(`/api/recipes/${id}/favorite/`, {
-      method: "POST",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-    }).then(this.checkResponse);
-  }
-
-  removeFromFavorites({ id }) {
-    const token = localStorage.getItem("token");
-    return fetch(`/api/recipes/${id}/favorite/`, {
-      method: "DELETE",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-    }).then(this.checkResponse);
-  }
-
-  copyRecipeLink({ id }) {
-    return fetch(`/api/recipes/${id}/get-link/`, {
-      method: "GET",
-      headers: {
-        ...this._headers,
-      },
-    }).then(this.checkResponse);
-  }
-
+  // Users
   getUser({ id }) {
-    const token = localStorage.getItem("token");
-    const authorization = token ? { authorization: `Token ${token}` } : {};
-    return fetch(`/api/users/${id}/`, {
-      method: "GET",
-      headers: {
-        ...this._headers,
-        ...authorization,
-      },
-    }).then(this.checkResponse);
+    const user = this._data.users.find(u => u.id === Number(id));
+    if (user) {
+      return this.simulateDelay(user);
+    } else {
+      return Promise.reject({ error: 'User not found.' });
+    }
   }
 
-  getUsers({ page = 1, limit = 6 }) {
-    const token = localStorage.getItem("token");
-    return fetch(`/api/users/?page=${page}&limit=${limit}`, {
-      method: "GET",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-    }).then(this.checkResponse);
-  }
-
-  // subscriptions
-
-  getSubscriptions({ page, limit = 6, recipes_limit = 3 }) {
-    const token = localStorage.getItem("token");
-    return fetch(
-      `/api/users/subscriptions/?page=${page}&limit=${limit}&recipes_limit=${recipes_limit}`,
-      {
-        method: "GET",
-        headers: {
-          ...this._headers,
-          authorization: `Token ${token}`,
-        },
-      }
-    ).then(this.checkResponse);
-  }
-
-  deleteSubscriptions({ author_id }) {
-    const token = localStorage.getItem("token");
-    return fetch(`/api/users/${author_id}/subscribe/`, {
-      method: "DELETE",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-    }).then(this.checkResponse);
-  }
-
-  subscribe({ author_id }) {
-    const token = localStorage.getItem("token");
-    return fetch(`/api/users/${author_id}/subscribe/`, {
-      method: "POST",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-    }).then(this.checkResponse);
-  }
-
-  // ingredients
+  // Ingredients
   getIngredients({ name }) {
-    const token = localStorage.getItem("token");
-    return fetch(`/api/ingredients/?name=${name}`, {
-      method: "GET",
-      headers: {
-        ...this._headers,
-      },
-    }).then(this.checkResponse);
+    let ingredients = [...this._data.ingredients];
+    if (name) {
+      ingredients = ingredients.filter(i => i.name.toLowerCase().includes(name.toLowerCase()));
+    }
+    return this.simulateDelay(ingredients);
   }
 
-  // tags
+  // Tags
   getTags() {
-    return fetch(`/api/tags/`, {
-      method: "GET",
-      headers: {
-        ...this._headers,
-      },
-    }).then(this.checkResponse);
+    return this.simulateDelay(this._data.tags);
   }
 
-  addToOrders({ id }) {
-    const token = localStorage.getItem("token");
-    return fetch(`/api/recipes/${id}/shopping_cart/`, {
-      method: "POST",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-    }).then(this.checkResponse);
-  }
-
-  removeFromOrders({ id }) {
-    const token = localStorage.getItem("token");
-    return fetch(`/api/recipes/${id}/shopping_cart/`, {
-      method: "DELETE",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-    }).then(this.checkResponse);
-  }
-
-  deleteRecipe({ recipe_id }) {
-    const token = localStorage.getItem("token");
-    return fetch(`/api/recipes/${recipe_id}/`, {
-      method: "DELETE",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-    }).then(this.checkResponse);
-  }
-
-  downloadFile() {
-    const token = localStorage.getItem("token");
-    return fetch(`/api/recipes/download_shopping_cart/`, {
-      method: "GET",
-      headers: {
-        ...this._headers,
-        authorization: `Token ${token}`,
-      },
-    }).then(this.checkFileDownloadResponse);
-  }
+  // Disabled actions
+  createRecipe(args) { return Promise.reject({ error: 'Action disabled' }) }
+  updateRecipe(args) { return Promise.reject({ error: 'Action disabled' }) }
+  addToFavorites(args) { return Promise.reject({ error: 'Action disabled' }) }
+  removeFromFavorites(args) { return Promise.reject({ error: 'Action disabled' }) }
+  copyRecipeLink(args) { return Promise.reject({ error: 'Action disabled' }) }
+  getSubscriptions(args) { return Promise.resolve({ results: [] }) } // Return empty for lists
+  deleteSubscriptions(args) { return Promise.reject({ error: 'Action disabled' }) }
+  subscribe(args) { return Promise.reject({ error: 'Action disabled' }) }
+  addToOrders(args) { return Promise.reject({ error: 'Action disabled' }) }
+  removeFromOrders(args) { return Promise.reject({ error: 'Action disabled' }) }
+  deleteRecipe(args) { return Promise.reject({ error: 'Action disabled' }) }
+  downloadFile(args) { return Promise.reject({ error: 'Action disabled' }) }
 }
 
-export default new Api(process.env.API_URL || "http://localhost", {
-  "content-type": "application/json",
-});
+export default new Api();

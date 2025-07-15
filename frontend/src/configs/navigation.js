@@ -3,7 +3,7 @@ import Icons from "../components/icons"
 export default [
   {
     title: 'Рецепты',
-    href: '/recipes',
+    href: '/',
     auth: false
   }, {
     title: 'Создать рецепт',

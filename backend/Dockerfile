@@ -4,8 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN python -m pip install --upgrade pip && \
-    pip install -r /app/requirements.txt --no-cache-dir
+RUN python -m pip install --upgrade pip &&     pip install --default-timeout=300 -r /app/requirements.txt --no-cache-dir
 
 RUN chmod +x /app/entrypoint.sh
 
