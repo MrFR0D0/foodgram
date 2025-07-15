@@ -33,7 +33,11 @@ class Command(BaseCommand):
                             f"{base64.b64encode(image_file.read()).decode('utf-8')}"
                         )
                 except FileNotFoundError:
-                    self.stdout.write(self.style.WARNING(f'Avatar not found for user {user.id}'))
+                    self.stdout.write(
+                        self.style.WARNING(
+                            f"Avatar not found for user {user.id}"
+                        )
+                    )
 
             data["users"].append(
                 {
@@ -70,7 +74,11 @@ class Command(BaseCommand):
                             f"{base64.b64encode(image_file.read()).decode('utf-8')}"
                         )
                 except FileNotFoundError:
-                    self.stdout.write(self.style.WARNING(f'Image not found for recipe {recipe.id}'))
+                    self.stdout.write(
+                        self.style.WARNING(
+                            f"Image not found for recipe {recipe.id}"
+                        )
+                    )
 
             ingredients_data = [
                 {
