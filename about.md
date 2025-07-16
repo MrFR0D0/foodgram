@@ -157,7 +157,22 @@ RUN npm install --legacy-peer-deps
     npm run build
     ```
 
-4.  **Публикация на GitHub Pages:** Содержимое папки `frontend/build` вручную инициализируется как отдельный Git-репозиторий и принудительно отправляется (force push) в специальную ветку (`master` или `main`) репозитория, выделенного для хостинга сайта (в нашем случае `foodgram_static`).
+4.  **Публикация на GitHub Pages:** Содержимое папки `frontend/build` вручную инициализируется как отдельный Git-репозиторий и принудительно отправляется (force push) в ветку `gh-pages` основного репозитория `foodgram`.
+
+    ```bash
+    # (в директории /frontend/build)
+    git init
+    git add .
+    git commit -m "Deploy static site"
+    git push -f https://github.com/MrFR0D0/foodgram.git master:gh-pages
+    ```
+
+5.  **Очистка:** После успешной публикации необходимо удалить временный репозиторий, созданный в папке `frontend/build`, чтобы избежать конфликтов с основным репозиторием проекта.
+
+    ```bash
+    # (в директории /frontend/build)
+    rm -rf .git
+    ```
 
 ## 4. Адаптация фронтенда для работы с локальными данными
 
@@ -283,7 +298,7 @@ ReactDOM.render(
   "name": "foodgram-project-react",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/foodgram_static",
+  "homepage": "/foodgram",
   "dependencies": {
     // ...
   }
