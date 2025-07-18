@@ -17,7 +17,7 @@ show-fixes = true
 
 src = ["backend/src"]
 include = ["backend/**/*.py"]
-extend-exclude = ["settings.py", "*/migrations/", "data/"]
+extend-exclude = ["settings.py", "*/migrations/", "data/", "tests",]
 
 
 [tool.ruff.lint]

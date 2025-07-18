@@ -128,6 +128,14 @@ docker-compose -f ./infra/docker-compose.yml -p foodgram up --build
 
 После успешного запуска проект будет доступен по адресу [http://localhost:8000/](http://localhost:8000/).
 
+### 4. Запуск тестов
+
+Для проверки корректной работы API вы можете запустить набор автоматических тестов. Убедитесь, что все контейнеры запущены, и выполните следующую команду:
+
+```bash
+docker-compose -f ./infra/docker-compose.yml -p foodgram exec -e PYTHONPATH=/app/src backend pytest
+```
+
 ---
 
 ## 🚀 Автоматическое развертывание (CI/CD)
