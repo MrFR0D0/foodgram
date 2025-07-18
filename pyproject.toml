@@ -106,3 +106,8 @@ skip-magic-trailing-comma = true
 [tool.ruff.lint.pydocstyle]
 # Use Google-style docstrings.
 convention = "google"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "foodgram.settings"
+python_files = "tests.py test_*.py *_tests.py"
+pythonpath = "backend/src"
