@@ -2,10 +2,13 @@ FROM python:3.12-alpine
 
 WORKDIR /app
 
-COPY . .
+RUN python -m pip install --upgrade pip
 
-RUN python -m pip install --upgrade pip && \
-    pip install -r /app/requirements.txt --no-cache-dir
+COPY requirements.txt .
+
+RUN pip install -r /app/requirements.txt --no-cache-dir
+
+COPY . .
 
 RUN chmod +x /app/entrypoint.sh
 

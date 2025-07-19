@@ -37,11 +37,8 @@ services:
     build:
       context: ../frontend
       dockerfile: Dockerfile
-    command: cp -r /app/build/. /static/
     env_file: ../.env
-    volumes:
-      - static:/static
-
+  
   gateway:
     container_name: proxy_Nginx
     build:
